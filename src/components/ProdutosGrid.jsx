@@ -81,6 +81,8 @@ function ProdutosGrid({ produtos = [], exibirSeloPromocao = false }) {
               src={candidatosImagem[0]}
               alt={produto.descricao}
               className="imagem-produto"
+              loading="lazy"
+              decoding="async"
               data-fallback-index="0"
               onError={(event) => {
                 const img = event.currentTarget;

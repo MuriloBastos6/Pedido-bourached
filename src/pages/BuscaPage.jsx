@@ -24,26 +24,6 @@ const ordemCategorias = [
   "potes",
 ];
 
-const titulos = {
-  amendoim: "Amendoim",
-  arroz: "Arroz",
-  sucrilhos: "Sucrilhos",
-  cha: "Cha",
-  farinhas: "Farinhas",
-  graos: "Graos",
-  panificacao: "Panificacao",
-  especiarias: "Especiarias",
-  frutas: "Frutas",
-  sementes: "Sementes",
-  produtosnaturais: "Produtos Naturais",
-  refris: "Refris",
-  oleo: "Oleo",
-  goma: "Goma",
-  salgadinhos: "Salgadinhos",
-  doces: "Doces",
-  potes: "Potes",
-};
-
 const capasPorSlug = {
   amendoim: "/amendoim.jpeg",
   arroz: "/arroz.jpeg",
@@ -185,61 +165,8 @@ function BuscaPage() {
     [slugReferencia],
   );
 
-  const indiceAtual = useMemo(
-    () => ordemCategorias.indexOf(slugReferencia),
-    [slugReferencia],
-  );
-  const categoriaAnterior =
-    indiceAtual >= 0
-      ? ordemCategorias[
-          (indiceAtual - 1 + ordemCategorias.length) % ordemCategorias.length
-        ]
-      : ordemCategorias[0];
-  const proximaCategoria =
-    indiceAtual >= 0
-      ? ordemCategorias[(indiceAtual + 1) % ordemCategorias.length]
-      : ordemCategorias[0];
-
-  function focarBarraPesquisa() {
-    const input = document.querySelector(".input-div input");
-    if (input) {
-      input.scrollIntoView({ behavior: "smooth", block: "center" });
-      input.focus();
-    }
-  }
-
   return (
     <section className="produtosPage">
-      <div
-        className="navegacao-categorias"
-        aria-label="Navegacao de categorias"
-      >
-        <Link
-          className="nav-categoria-btn"
-          to={`/${categoriaAnterior}`}
-          aria-label={`Categoria anterior: ${titulos[categoriaAnterior]}`}
-          title={`Categoria anterior: ${titulos[categoriaAnterior]}`}
-        >
-          &lt;
-        </Link>
-        <button
-          type="button"
-          className="nav-categoria-btn"
-          onClick={focarBarraPesquisa}
-          aria-label="Ir para barra de pesquisa"
-          title="Ir para barra de pesquisa"
-        >
-          🔍
-        </button>
-        <Link
-          className="nav-categoria-btn"
-          to={`/${proximaCategoria}`}
-          aria-label={`Proxima categoria: ${titulos[proximaCategoria]}`}
-          title={`Proxima categoria: ${titulos[proximaCategoria]}`}
-        >
-          &gt;
-        </Link>
-      </div>
 
       <div
         className="titulo-container"

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Categorias, { categorias } from "./Categorias";
 import BuscaProdutos from "./BuscaProdutos";
+import BotaoCarrinho from "./BotaoCarrinho";
 
 function Navbar() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -44,6 +45,7 @@ function Navbar() {
           <img src="logo-bourached-branco.png" alt="Logo da bourached" />
         </Link>
       </div>
+      <BotaoCarrinho variante="topo" />
       <div className="div-logo-saint">
         <img src="logo-saint-louis.png" alt="Logo Saint Louis" />
       </div>

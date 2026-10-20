@@ -1,27 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import "./produtoPage.css";
 import ProdutosGrid from "../components/ProdutosGrid";
-
-const ordemCategorias = [
-  "amendoim",
-  "arroz",
-  "sucrilhos",
-  "cha",
-  "farinhas",
-  "graos",
-  "panificacao",
-  "especiarias",
-  "frutas",
-  "sementes",
-  "produtosnaturais",
-  "refris",
-  "oleo",
-  "goma",
-  "salgadinhos",
-  "doces",
-  "potes",
-];
+import SetasCategorias from "../components/SetasCategorias";
 
 const categoriasValidas = new Set([
   "amendoim",
@@ -161,63 +142,12 @@ function CategoriaPage() {
     [slug],
   );
 
-  const indiceAtual = useMemo(() => ordemCategorias.indexOf(slug), [slug]);
-  const categoriaAnterior =
-    indiceAtual >= 0
-      ? ordemCategorias[
-          (indiceAtual - 1 + ordemCategorias.length) % ordemCategorias.length
-        ]
-      : ordemCategorias[0];
-  const proximaCategoria =
-    indiceAtual >= 0
-      ? ordemCategorias[(indiceAtual + 1) % ordemCategorias.length]
-      : ordemCategorias[0];
-
-  function focarBarraPesquisa() {
-    const input = document.querySelector(".input-div input");
-    if (input) {
-      input.scrollIntoView({ behavior: "smooth", block: "center" });
-      input.focus();
-    }
-  }
-
   if (!categoriaValida) {
     return <Navigate to="/" replace />;
   }
 
   return (
     <section className="produtosPage">
-      <div
-        className="navegacao-categorias"
-        aria-label="Navegacao de categorias"
-      >
-        <Link
-          className="nav-categoria-btn"
-          to={`/${categoriaAnterior}`}
-          aria-label={`Categoria anterior: ${titulos[categoriaAnterior]}`}
-          title={`Categoria anterior: ${titulos[categoriaAnterior]}`}
-        >
-          &lt;
-        </Link>
-        <button
-          type="button"
-          className="nav-categoria-btn"
-          onClick={focarBarraPesquisa}
-          aria-label="Ir para barra de pesquisa"
-          title="Ir para barra de pesquisa"
-        >
-          🔍
-        </button>
-        <Link
-          className="nav-categoria-btn"
-          to={`/${proximaCategoria}`}
-          aria-label={`Proxima categoria: ${titulos[proximaCategoria]}`}
-          title={`Proxima categoria: ${titulos[proximaCategoria]}`}
-        >
-          &gt;
-        </Link>
-      </div>
-
       <div
         className="titulo-container"
         style={{
@@ -233,6 +163,7 @@ function CategoriaPage() {
           <ProdutosGrid produtos={produtos} exibirSeloPromocao />
         )}
       </div>
+      <SetasCategorias atual={slug} />
     </section>
   );
 }

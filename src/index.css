@@ -91,7 +91,6 @@ body::-webkit-scrollbar {
   line-height: 1.3;
 }
 
-
 .div-logo {
   grid-area: logo;
   width: 16rem;
@@ -362,269 +361,20 @@ body::-webkit-scrollbar {
   border-color: rgba(255, 225, 0, 0.6);
 }
 
-
 /*Termina o estilo da navbar*/
 
-
 /*Começa o estilo do main*/
-.main-contexto {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(180deg,
-      rgba(0, 0, 0, 0.42) 0%,
-      rgba(0, 0, 0, 0.28) 35%,
-      rgba(0, 0, 0, 0) 70%),
-    url('/bourachedStore.jpg');
-  background-size: cover;
-  background-position: center;
-  height: 60vh;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-content: center;
-  justify-content: center;
-  padding: 0.5rem 0.5rem 5.5rem;
-  color: white;
-}
-
-.main-contexto::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 130px;
-  background: linear-gradient(to bottom,
-      rgba(1, 91, 194, 0) 0%,
-      rgba(1, 91, 194, 0.72) 68%,
-      rgba(1, 91, 194, 1) 100%);
-  pointer-events: none;
-}
-
-
-.main-contexto h1 {
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  margin: 0;
-  padding: 0.5rem;
-  font-family: "Outfit", sans-serif;
-  letter-spacing: 0.4px;
-  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-.main-contexto button {
-  background: rgba(0, 28, 185, 0.28);
-  color: white;
-  border: solid 2px rgba(255, 255, 255, 0.233);
-  border-radius: 999px;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: transform var(--transition-fast), background-color var(--transition-fast);
-}
-
-.main-contexto button:hover {
-  transform: translateY(-2px);
-  background: rgba(0, 28, 185, 0.45);
-}
 
 /*Fim da Main*/
 /* Bloco de dados */
-.bloco-de-dados {
-  width: min(96%, 1220px);
-  min-height: 10rem;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.95);
-  border-top-right-radius: 1rem;
-  border-top-left-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  box-shadow: var(--shadow-elevated);
-  position: relative;
-  overflow: visible;
-}
-
-.bloco-de-dados::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #ffd400, #fff28a, #ffd400);
-}
-
-
-.dados-com-img {
-  width: auto;
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 32rem;
-  min-height: 8rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  margin: 0;
-  transition: transform var(--transition-fast);
-}
-
-.dados-com-img:hover {
-  transform: translateY(-2px);
-}
-
-.dados-com-img img {
-  width: 7rem;
-  height: 5.5rem;
-  object-fit: contain;
-  margin: 0 0 0.3rem;
-}
-
-.dados-com-img h2 {
-  margin: 0;
-  font-size: clamp(1rem, 1.8vw, 1.4rem);
-  color: #1f2937;
-}
-
-.dados-com-img p {
-  margin: 0;
-  font-size: clamp(0.82rem, 1.3vw, 1rem);
-  color: #4b5563;
-}
-
-.dados-com-img a {
-  text-decoration: none;
-  color: #2563eb;
-
-}
-
-.instagram-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.1rem;
-  width: fit-content;
-}
-
-.instagram-icon {
-  width: 1.05em;
-  height: 1.05em;
-  fill: currentColor;
-  flex-shrink: 0;
-}
-
-.instagram-text {
-  line-height: 1.05;
-  display: inline;
-}
 
 /*Fim do bloco de dados*/
 
 /* Carrossel */
-.carrossel {
-  position: relative;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-
-  overflow: hidden;
-  box-shadow: var(--shadow-elevated);
-}
-
-.carrossel::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 42px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.26), transparent);
-  z-index: 2;
-  pointer-events: none;
-}
-
-.carrossel-track {
-  display: flex;
-  transition: transform 0.6s ease;
-  touch-action: pan-y;
-}
-
-.carrossel-slide {
-  min-width: 100%;
-  position: relative;
-  height: 56vh;
-}
-
-.carrossel-slide-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-  color: inherit;
-  text-decoration: none;
-}
-
-.carrossel-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: brightness(0.72);
-}
 
 /* Gradiente + texto por cima da imagem */
-.carrossel-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 2rem;
-  color: #fff;
-  background: linear-gradient(to top,
-      rgba(0, 0, 0, 0.78) 0%,
-      rgba(0, 0, 0, 0.5) 35%,
-      rgba(0, 0, 0, 0.22) 70%);
-}
-
-.carrossel-overlay h2 {
-  margin: 0 0 0.4rem 0;
-  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
-}
-
-.carrossel-overlay p {
-  margin: 0;
-  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
-}
 
 /* Botões */
-.carrossel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border: none;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.42);
-  color: #fff;
-  font-size: 1.6rem;
-  cursor: pointer;
-  z-index: 3;
-}
-
-.carrossel-btn.prev {
-  left: 12px;
-}
-
-.carrossel-btn.next {
-  right: 12px;
-}
 
 /* Botao flutuante WhatsApp */
 .whatsapp-float {
@@ -680,8 +430,7 @@ body::-webkit-scrollbar {
 .categoria-banner {
   height: 15rem;
   width: min(95%, 1220px);
-  margin: -4.5rem auto 1.2rem;
-  /* sobe sobre o carrossel */
+  margin: 1rem auto 1.2rem;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
   overflow: hidden;
@@ -974,7 +723,6 @@ body::-webkit-scrollbar {
 
 /*Fim da lista de Produtos*/
 
-
 .card-categorias {
   display: flex;
   flex-wrap: wrap;
@@ -1009,7 +757,6 @@ body::-webkit-scrollbar {
   box-shadow: 0 10px 20px rgba(0, 28, 185, 0.25);
   background-color: #0024de;
 }
-
 
 /* =========================
    Responsividade (Media)
@@ -1211,94 +958,10 @@ body::-webkit-scrollbar {
 }
 
 /* Main */
-@media (max-width: 768px) {
-  .main-contexto {
-    height: auto;
-    min-height: 50vh;
-    text-align: center;
-    align-items: center;
-    padding-bottom: 4rem;
-  }
-
-  .main-contexto h1 {
-    font-size: 1.8rem;
-  }
-
-  .main-contexto button {
-    width: 100%;
-    max-width: 260px;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-contexto {
-    min-height: 42vh;
-    padding: 0.8rem;
-  }
-
-  .main-contexto h1 {
-    font-size: 1.4rem;
-    line-height: 1.2;
-  }
-}
 
 /* Bloco de dados */
-@media (min-width: 901px) {
-  .bloco-de-dados {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-  }
-}
-
-@media (max-width: 768px) {
-  .bloco-de-dados {
-    margin: 0 auto;
-    min-height: 10.5rem;
-    padding: 0.9rem 0.7rem;
-    gap: 0.6rem;
-    justify-content: center;
-  }
-
-  .dados-com-img {
-    width: 48%;
-    flex: 0 0 48%;
-    min-width: 0;
-    min-height: 9rem;
-    gap: 0.25rem;
-  }
-
-  .dados-com-img img {
-    width: 3.9rem;
-    height: 3.2rem;
-  }
-
-  .dados-com-img h2 {
-    font-size: 1.05rem;
-    line-height: 1.15;
-  }
-
-  .dados-com-img p {
-    font-size: 0.78rem;
-    line-height: 1.2;
-  }
-}
 
 /* Carrossel */
-@media (max-width: 768px) {
-  .carrossel-slide {
-    height: 30vh;
-  }
-
-  .carrossel-overlay {
-    padding: 1rem;
-  }
-
-  .carrossel-btn {
-    display: none;
-  }
-}
 
 /* Lista de produtos */
 @media (min-width: 901px) {
@@ -1532,45 +1195,3 @@ body::-webkit-scrollbar {
 }
 
 /* Ajustes finais mobile */
-@media (max-width: 768px) {
-  .bloco-de-dados {
-    width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    box-sizing: border-box;
-    justify-content: center;
-  }
-
-  .dados-com-img {
-    width: auto;
-    flex: 1 1 0;
-    max-width: none;
-    text-align: center;
-  }
-
-  .dados-com-img h2,
-  .dados-com-img p {
-    width: 100%;
-    text-align: center;
-  }
-
-  .instagram-text {
-    font-size: 0.98rem;
-  }
-
-  .bloco-de-dados .dados-com-img a {
-    font-size: 0.98rem;
-  }
-
-  .instagram-link {
-    gap: 0.05rem;
-  }
-
-  .instagram-icon {
-    width: 0.9em;
-    height: 0.9em;
-  }
-}
