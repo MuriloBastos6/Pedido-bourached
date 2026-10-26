@@ -31,6 +31,14 @@ const r = lerMensagemDoSite("[10:32, 26/10/2026] Maria: " + msg.split("\n")[0] +
 ok(r.itens.length === 2, `2 itens, veio ${r.itens.length}`);
 ok(r.itens[0].codigo === "3124" && r.itens[0].qtd === 3, "item 1 = 3124 x3");
 ok(r.itens[1].codigo === "2674" && r.itens[1].qtd === 2, "item 2 = 2674 x2");
+ok(r.itens[0].descricao === "BALA JUJUBA" && r.itens[0].pesoLabel === "10KG - CX", "nome sem o código e peso");
+ok(msg.includes("1) *CÓD. 3124 - BALA JUJUBA*\n   *QTD: 3*"), "código ao lado do nome e QTD logo abaixo");
+console.log(msg.split("\n").slice(5, 10).join("\n"));
+
+// mensagens no formato antigo continuam sendo lidas
+const antiga = "🛒 *PEDIDO MONTADO*\nPedido: *#123*\nCliente: *Ana*\n\n*ITENS*\n1) *BALA JUJUBA*\n   Peso: 10KG - CX\n   Qtd: 3\n   Cód.: 3124\n   ~R$ 483,00\n";
+const ra = lerMensagemDoSite(antiga);
+ok(ehMensagemDoSite(antiga) && ra.itens.length === 1 && ra.itens[0].codigo === "3124" && ra.itens[0].qtd === 3, "formato antigo");
 ok(r.cabecalho.cliente === "Maria da Silva" && r.cabecalho.numero === "261026-0545-AB", "cabeçalho");
 ok(r.cabecalho.obs === "Retirar na loja", "obs");
 ok(r.cabecalho.cnpj === "11.222.333/0001-81", "CNPJ no cabeçalho");

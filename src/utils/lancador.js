@@ -191,8 +191,10 @@ function embalagemDoLembrado(consulta, lembrado, indice) {
 }
 
 // ---------- Mensagem gerada pelo site ----------
+// Formato atual: "1) *CÓD. 3124 - BALA JUJUBA*" + "*QTD: 3*".
+// Formato antigo: "1) *BALA JUJUBA*" + "Qtd: 3" + "Cód.: 3124".
 export function ehMensagemDoSite(texto) {
-  return /C[óo]d\.?\s*:/i.test(texto) && /Qtd\s*:/i.test(texto);
+  return /C[óo]d\.?\s*:?\s*\d/i.test(texto) && /Qtd\s*:/i.test(texto);
 }
 
 export function lerMensagemDoSite(texto) {
@@ -212,10 +214,13 @@ export function lerMensagemDoSite(texto) {
     else if ((m = /^Obs\w*\s*:\s*(.+)/i.exec(linha))) cab.obs = m[1].trim();
     else if ((m = /^(\d+)\s*\)\s*\*?(.+?)\*?\s*$/.exec(linha))) {
       fechar();
-      atual = { descricao: m[2].trim(), pesoLabel: "", qtd: 1, codigo: "" };
+      const comCodigo = /^C[óo]d\.?\s*:?\s*(\S+)\s*[-–]\s*(.+)$/i.exec(m[2].trim());
+      atual = comCodigo
+        ? { descricao: comCodigo[2].trim(), pesoLabel: "", qtd: 1, codigo: comCodigo[1] }
+        : { descricao: m[2].trim(), pesoLabel: "", qtd: 1, codigo: "" };
     } else if (atual) {
       if ((m = /^Peso\s*:\s*(.+)/i.exec(linha))) atual.pesoLabel = m[1].trim();
-      else if ((m = /^Qtd\s*:\s*(\d+)/i.exec(linha))) atual.qtd = Number(m[1]);
+      else if ((m = /^\*?Qtd\s*:\s*(\d+)/i.exec(linha))) atual.qtd = Number(m[1]);
       else if ((m = /^C[óo]d\.?\s*:\s*(\S+)/i.exec(linha))) atual.codigo = m[1].trim();
     }
   });

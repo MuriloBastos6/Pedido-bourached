@@ -72,11 +72,12 @@ export function montarMensagemWhatsApp(pedido) {
   linhas.push("");
   linhas.push("*ITENS*");
 
+  // Código ao lado do nome e quantidade logo abaixo, em destaque, para o
+  // atendente lançar direto (o /atendente lê este formato e o antigo).
   pedido.itens.forEach((item, i) => {
-    linhas.push(`${i + 1}) *${item.descricao}*`);
+    linhas.push(`${i + 1}) *CÓD. ${item.codigo} - ${String(item.descricao).toUpperCase()}*`);
+    linhas.push(`   *QTD: ${item.qtd}*`);
     linhas.push(`   Peso: ${item.pesoLabel}`);
-    linhas.push(`   Qtd: ${item.qtd}`);
-    linhas.push(`   Cód.: ${item.codigo}`);
     linhas.push(`   ~${formatarPreco(item.precoVenda * item.qtd)}`);
     linhas.push("");
   });
