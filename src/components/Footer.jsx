@@ -2,6 +2,9 @@ function Footer() {
   const whatsappLink = "https://wa.me/5511964181200";
   const instagramLink = "https://www.instagram.com/bourachedalimentos/";
   const anoAtual = new Date().getFullYear();
+  const endereco = "Rua do Lucas, 306 - Brás, São Paulo - SP";
+  const mapaEmbed = `https://www.google.com/maps?q=${encodeURIComponent(endereco)}&z=16&output=embed`;
+  const mapaLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
 
   return (
     <footer
@@ -59,8 +62,21 @@ function Footer() {
 
         <section className="footer-col" aria-label="Atendimento">
           <h3>Atendimento</h3>
-          <p>Rua do lucas 306, Brás</p>
+          <p>Rua do Lucas 306, Brás</p>
           <p>Seg a Sex: 06:00 as 16:30</p>
+          <p>
+            <a href={mapaLink} target="_blank" rel="noopener noreferrer">
+              Como chegar
+            </a>
+          </p>
+          <div className="footer-mapa">
+            <iframe
+              src={mapaEmbed}
+              title="Mapa: Bourached na Rua do Lucas 306, Brás"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
         </section>
 
         <section className="footer-col" aria-label="Pagamentos">
