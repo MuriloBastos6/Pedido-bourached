@@ -16,6 +16,7 @@ export const categorias = [
   { titulo: "Goma pronta", capa: "/Goma.png", slug: "goma" },
   { titulo: "Salgadinhos & snacks", capa: "/salgadinho.jpeg", slug: "salgadinhos" },
   { titulo: "Doces", capa: "/doces.jpeg", slug: "doces" },
+  { titulo: "Bolachas Mineiras", capa: "/bolachas.jpeg", slug: "bolachas" },
   { titulo: "Potes", capa: "/pote.jpeg", slug: "potes" },
 ];
 

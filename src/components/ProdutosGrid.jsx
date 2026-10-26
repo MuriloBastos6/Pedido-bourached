@@ -2,6 +2,7 @@ import { useState } from "react";
 import BotaoAdicionar from "./BotaoAdicionar.jsx";
 import { useCarrinho } from "../context/CarrinhoContext.jsx";
 import { chaveItem, formatarPreco } from "../utils/pedido.js";
+import { urlImagemProduto } from "../utils/catalogo.js";
 
 function removerExtensao(arquivo = "") {
   const semQuery = String(arquivo).split("?")[0].split("#")[0];
@@ -14,7 +15,7 @@ function removerExtensao(arquivo = "") {
 }
 
 function montarCandidatosImagem(caminhoImagem = "") {
-  const caminhoLimpo = String(caminhoImagem || "").trim();
+  const caminhoLimpo = urlImagemProduto(caminhoImagem);
   if (!caminhoLimpo) {
     return ["/arroz.jpeg"];
   }

@@ -1,9 +1,13 @@
-// Testa o leitor de pedidos com a lista real: node scripts/teste-lancador.mjs
-import { readFileSync } from "node:fs";
+// Testa o leitor de pedidos com a lista real (bourached-dados): node scripts/teste-lancador.mjs
+// Para testar outra lista: PRODUTOS_URL=http://localhost:5174/produtos.json node scripts/teste-lancador.mjs
 import { montarIndice, lerTextoLivre, lerMensagemDoSite, ehMensagemDoSite, textoParaFlutt, extrairQtd } from "../src/utils/lancador.js";
 import { montarMensagemWhatsApp } from "../src/utils/pedido.js";
 
-const dados = JSON.parse(readFileSync(new URL("../public/produtos.json", import.meta.url)));
+const PRODUTOS_URL = process.env.PRODUTOS_URL || "https://bourached-dados.vercel.app/produtos.json";
+const dados = await fetch(PRODUTOS_URL, { cache: "no-cache" }).then((r) => {
+  if (!r.ok) throw new Error(`Falha ao baixar ${PRODUTOS_URL}: ${r.status}`);
+  return r.json();
+});
 const mapa = new Map();
 Object.values(dados).forEach((itens) => itens.forEach((p) => p.variacoes.forEach((v) => {
   const k = `${p.id}|${v.codigo}`; if (!mapa.has(k)) mapa.set(k, { produto: p, variacao: v });

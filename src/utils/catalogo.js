@@ -1,5 +1,10 @@
 import { chaveItem } from "./pedido.js";
 
+// Os produtos e as imagens ficam no repositório bourached-dados, compartilhado
+// pelos sites. A URL vem do .env (VITE_PRODUTOS_URL).
+export const PRODUTOS_URL =
+  import.meta.env.VITE_PRODUTOS_URL || "https://bourached-dados.vercel.app/produtos.json";
+
 let promessaDados = null;
 let promessa = null;
 
@@ -16,10 +21,22 @@ export function ehChavePromocao(chave = "") {
   return normalizada === "promocao" || normalizada === "promocoes";
 }
 
+// As imagens no JSON são caminhos como "/images/graos/arroz.jpg"; elas ficam
+// no mesmo servidor do produtos.json.
+export function urlImagemProduto(caminho = "") {
+  const limpo = String(caminho || "").trim();
+  if (!limpo || limpo === "/arroz.jpeg") return limpo;
+  try {
+    return new URL(limpo, PRODUTOS_URL).href;
+  } catch {
+    return limpo;
+  }
+}
+
 // Carrega o produtos.json uma única vez (compartilhado por todas as páginas).
 export function carregarDados() {
   if (!promessaDados) {
-    promessaDados = fetch("/produtos.json")
+    promessaDados = fetch(PRODUTOS_URL, { cache: "no-cache" })
       .then((r) => {
         if (!r.ok) throw new Error("Falha ao carregar produtos");
         return r.json();

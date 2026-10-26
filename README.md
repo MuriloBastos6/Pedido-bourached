@@ -1,6 +1,6 @@
 # Pedidos Bourached
 
-Sistema de pedidos separado do site de produtos. Usa a mesma lista (`public/produtos.json`) e o mesmo visual, mas é um projeto independente.
+Sistema de pedidos separado do site de produtos. Os produtos, preços e fotos vêm do repositório **bourached-dados** (o mesmo das outras listas), então qualquer alteração feita no painel de lá aparece aqui sem novo deploy.
 
 ## Layout
 Inspirado na loja da Ibérica, com a identidade da Bourached (azul, amarelo e logos):
@@ -18,7 +18,7 @@ Inspirado na loja da Ibérica, com a identidade da Bourached (azul, amarelo e lo
 
 ## Lançador do atendente (`/atendente`)
 Página interna para agilizar o lançamento no Flutt. O atendente cola o pedido do WhatsApp (mensagem da loja virtual **ou** texto escrito pelo cliente) e a tela mostra código, descrição, peso e quantidade de cada item, com os que precisam de conferência destacados. Botão **Copiar código ⇥ quantidade** copia a lista pronta para o lançamento; cada item pode ser marcado como "lançado". O progresso fica salvo no navegador.
-Testes do leitor: `node scripts/teste-lancador.mjs`.
+Testes do leitor (usa a lista publicada do bourached-dados): `node scripts/teste-lancador.mjs`.
 
 ## Mobile
 Cabeçalho compacto, menu de categorias vira faixa rolável, carrosséis arrastáveis, produtos em 2 colunas, barra do carrinho fixa embaixo e carrinho em tela cheia (`src/mobile.css`).
@@ -31,8 +31,8 @@ npm run dev
 
 ## Ajustes
 - Número do WhatsApp: `src/config.js`
-- Atualizar preços/produtos a partir do site original (sem alterá-lo):
-  `npm run lista:sincronizar -- ../Lista-de-Produtos-Bourached`
+- Endereço dos produtos: `VITE_PRODUTOS_URL` no `.env` (hoje `https://bourached-dados.vercel.app/produtos.json`). As fotos (`/images/...`) são buscadas no mesmo servidor. Na Vercel, cadastre a mesma variável em **Settings → Environment Variables** se quiser trocar o endereço.
+- Categoria nova no bourached-dados: adicione-a em `src/utils/categorias.js` (título, capa em `public/` e slug igual à chave do JSON).
 - Armazenamento (hoje no aparelho do cliente): `src/storage/pedidosStorage.js`. Para login e histórico em qualquer aparelho, troque o miolo desse arquivo por um banco (ex.: Firebase).
 
 ## Publicar
