@@ -50,13 +50,34 @@ const livres = [
   ["1 arroz agulha br 25kg", "85"], ["canjica amarela 5kg - 2", "2471"], ["3 pc bala azedinha cereja 5kg", "3434"],
   ["2 cx bala minhoca acida 10kg", "3130"], ["1 sc milho pipoca zanella 25kg", "3110"], ["2 fd cajuina sao geraldo 1lt", "3402"],
   ["bicarbonato", null],
+  // casos reais de clientes (o nome pesa mais que o peso pedido)
+  ["5 KG Uva passas", "2229"], ["5 kg Ameixa", "3051"], ["3 kg Castanha caramelizada", "2508"],
+  ["1 Saco Amido de milho", "8"], ["2 amendoin caramelizado 5kg", "3367"],
+  ["10 kg castanha caramelizada", "2508", 2],
 ];
-livres.forEach(([t, esperado]) => {
+livres.forEach(([t, esperado, qtdEsperada]) => {
   const [l] = lerTextoLivre(t, indice);
   const e = l.escolhida;
   console.log(`  "${t}" -> ${e ? e.codigo + " " + e.descricao + " " + e.pesoLabel : "—"} [${l.confianca}] qtd ${l.qtd}`);
   if (esperado) ok(e && e.codigo === esperado, `"${t}" deveria dar ${esperado}`);
+  if (qtdEsperada) ok(l.qtd === qtdEsperada, `"${t}" deveria dar qtd ${qtdEsperada}`);
 });
+
+console.log("\n4) Aviso quando o peso pedido não fecha com a embalagem");
+const [uva] = lerTextoLivre("5 KG Uva passas", indice);
+console.log(`  nota: ${uva.nota}`);
+ok(/5 ?kg/i.test(uva.nota || "") && uva.confianca !== "alta", "uva passa 5 kg deveria avisar que a caixa é de 10 kg");
+
+console.log("\n5) Escolha lembrada do atendente");
+const [antes] = lerTextoLivre("3 kg Nozes", indice);
+const lembrada = antes.sugestoes.find((s) => s.item.descricao.includes("QUARTOS"));
+const aprendido = { [antes.chave]: lembrada.item.codigo };
+const [depois] = lerTextoLivre("3 KG nozes", indice, aprendido);
+console.log(`  "3 KG nozes" -> ${depois.escolhida.codigo} ${depois.escolhida.descricao} [${depois.confianca}]`);
+ok(depois.escolhida.produtoId === lembrada.item.produtoId, "deveria usar o produto lembrado mesmo com outro peso");
+const [caixa] = lerTextoLivre("1 cx nozes", indice, aprendido);
+console.log(`  "1 cx nozes" -> ${caixa.escolhida.codigo} ${caixa.escolhida.descricao} ${caixa.escolhida.pesoLabel} [${caixa.confianca}]`);
+ok(caixa.escolhida.produtoId === lembrada.item.produtoId && caixa.escolhida.unidade === "CX" && caixa.confianca === "alta", "produto lembrado na embalagem pedida (caixa)");
 console.log("\nRepetir pedido: itens salvos com id antigo da busca");
 const [algum] = mapa.values();
 const idBusca = `${algum.produto.categoria}-${algum.produto.id}`;

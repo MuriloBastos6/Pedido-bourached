@@ -18,6 +18,12 @@ Inspirado na loja da Ibérica, com a identidade da Bourached (azul, amarelo e lo
 
 ## Lançador do atendente (`/atendente`)
 Página interna para agilizar o lançamento no Flutt. O atendente cola o pedido do WhatsApp (mensagem da loja virtual **ou** texto escrito pelo cliente) e a tela mostra código, descrição, peso e quantidade de cada item, com os que precisam de conferência destacados. Botão **Copiar código ⇥ quantidade** copia a lista pronta para o lançamento; cada item pode ser marcado como "lançado". O progresso fica salvo no navegador.
+Como o leitor escolhe (texto escrito pelo cliente):
+- O **nome** decide o produto; o peso escrito só escolhe a embalagem ("uva passa 5kg" sugere a caixa de 10 kg da uva passa, não a farinha de uva de 5 kg).
+- Produto com forma que o cliente não pediu (pó, farinha, flocos, chips...) perde pontos. Plural e erro de uma letra são tolerados.
+- Quilos viram quantidade quando fecham com a embalagem ("10 kg" de pacote de 5 kg = 2) e, quando não fecham, aparece um aviso para conferir.
+- Ao trocar a sugestão de uma linha, o leitor **lembra** a escolha (neste aparelho) e usa nas próximas vezes que a mesma frase aparecer, ajustando a embalagem ao peso pedido. Dá para apagar em "Esquecer escolhas aprendidas".
+
 Testes do leitor (usa a lista publicada do bourached-dados): `node scripts/teste-lancador.mjs`.
 
 ## Mobile

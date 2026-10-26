@@ -13,6 +13,25 @@ import {
 import "./atendente.css";
 
 const CHAVE = "bourached:atendente";
+// Escolhas corrigidas pelo atendente: { "frase normalizada" -> codigo }.
+// Ficam neste aparelho e são usadas nas próximas leituras.
+const CHAVE_APRENDIDO = "bourached:atendente-aprendido";
+
+function lerAprendido() {
+  try {
+    return JSON.parse(window.localStorage.getItem(CHAVE_APRENDIDO) || "{}") || {};
+  } catch {
+    return {};
+  }
+}
+
+function gravarAprendido(aprendido) {
+  try {
+    window.localStorage.setItem(CHAVE_APRENDIDO, JSON.stringify(aprendido));
+  } catch {
+    // sem armazenamento: só não lembra
+  }
+}
 
 function carregarSalvo() {
   try {
@@ -64,6 +83,7 @@ function AtendentePage() {
   const [erroCatalogo, setErroCatalogo] = useState("");
   const [busca, setBusca] = useState("");
   const [aviso, setAviso] = useState("");
+  const [aprendido, setAprendido] = useState(() => lerAprendido());
 
   useEffect(() => {
     document.body.classList.add("produtos-page-body");
@@ -146,7 +166,7 @@ function AtendentePage() {
       return;
     }
 
-    const lidas = lerTextoLivre(texto, indice);
+    const lidas = lerTextoLivre(texto, indice, aprendido);
     setCabecalho(null);
     setLinhas(
       lidas.map((l) => ({
@@ -163,7 +183,8 @@ function AtendentePage() {
               lancado: false,
             }),
         confianca: l.confianca,
-        nota: "",
+        nota: l.nota,
+        chave: l.chave,
         original: l.original,
         sugestoes: l.sugestoes.map((s) => ({
           chave: `${s.item.produtoId}|${s.item.codigo}`,
@@ -181,6 +202,12 @@ function AtendentePage() {
     const linha = linhas.find((l) => l.id === id);
     const alvo = linha?.sugestoes.find((s) => s.chave === chave);
     if (!alvo) return;
+    // lembra a correção para a próxima vez que a mesma frase aparecer
+    if (linha.chave) {
+      const novo = { ...aprendido, [linha.chave]: alvo.item.codigo };
+      setAprendido(novo);
+      gravarAprendido(novo);
+    }
     atualizar(id, {
       codigo: alvo.item.codigo,
       produtoId: alvo.item.produtoId,
@@ -188,8 +215,15 @@ function AtendentePage() {
       pesoLabel: alvo.item.pesoLabel,
       precoVenda: alvo.item.precoVenda,
       confianca: "alta",
-      nota: "",
+      nota: linha.chave ? "Escolha lembrada para as próximas vezes" : "",
     });
+  }
+
+  function esquecerEscolhas() {
+    if (!window.confirm("Apagar as escolhas que o leitor aprendeu neste aparelho?")) return;
+    setAprendido({});
+    gravarAprendido({});
+    mostrarAviso("Escolhas apagadas");
   }
 
   function remover(id) {
@@ -256,6 +290,11 @@ function AtendentePage() {
           <button type="button" className="carrinho-link claro" onClick={limpar}>
             Limpar tudo
           </button>
+          {Object.keys(aprendido).length > 0 && (
+            <button type="button" className="carrinho-link claro" onClick={esquecerEscolhas}>
+              Esquecer {Object.keys(aprendido).length} escolha(s) aprendida(s)
+            </button>
+          )}
         </div>
 
         {cabecalho && (
