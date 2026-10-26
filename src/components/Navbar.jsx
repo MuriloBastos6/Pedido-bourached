@@ -4,7 +4,6 @@ import Categorias from "./Categorias";
 import { buscarCategoria } from "../utils/categorias.js";
 import BuscaProdutos from "./BuscaProdutos";
 import BotaoCarrinho from "./BotaoCarrinho";
-import { WHATSAPP_NUMBER } from "../config.js";
 
 function IconePedidos() {
   return (
@@ -107,14 +106,6 @@ function Navbar() {
           <NavLink to="/meus-pedidos" className="topo-link">
             Meus pedidos
           </NavLink>
-          <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="topo-link"
-          >
-            Contato
-          </a>
 
           <span className="topo-selo">Pedido rápido pelo WhatsApp</span>
 
