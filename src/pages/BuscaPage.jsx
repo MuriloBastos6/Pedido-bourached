@@ -33,7 +33,9 @@ function BuscaPage() {
         vistos.add(idOriginal);
         lista.push({
           ...produto,
-          id: `${slug}-${idOriginal}`,
+          // o id do produto continua o original (é ele que vai para o
+          // carrinho); a chave da lista só evita repetição na grade
+          chaveLista: `${slug}-${idOriginal}`,
           isPromocao: idsPromocao.has(idOriginal),
           codigosBusca: montarCodigos(produto),
         });
@@ -45,7 +47,7 @@ function BuscaPage() {
       if (vistos.has(idOriginal)) return;
       lista.push({
         ...produto,
-        id: `promocoes-${idOriginal}`,
+        chaveLista: `promocoes-${idOriginal}`,
         codigosBusca: montarCodigos(produto),
       });
     });

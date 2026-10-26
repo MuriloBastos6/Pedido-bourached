@@ -147,7 +147,7 @@ function ProdutosGrid({ produtos = [], exibirSeloPromocao = true }) {
     <div className="categoria-grid">
       {produtos.map((produto) => (
         <CardProduto
-          key={produto.id}
+          key={produto.chaveLista || produto.id}
           produto={produto}
           exibirSeloPromocao={exibirSeloPromocao}
         />

@@ -37,7 +37,7 @@ export const carrinhoStorage = {
 };
 
 export const clienteStorage = {
-  ler: () => ler(CHAVES.cliente, { nome: "", telefone: "" }),
+  ler: () => ({ nome: "", telefone: "", cnpj: "", ...ler(CHAVES.cliente, {}) }),
   gravar: (cliente) => gravar(CHAVES.cliente, cliente),
 };
 

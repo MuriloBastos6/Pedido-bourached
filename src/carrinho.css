@@ -331,3 +331,7 @@
 }
 .carrinho-barra-texto { flex: 1; text-align: left; font-weight: 700; }
 .carrinho-barra strong { color: #ffe100; }
+
+.carrinho-campos label small { font-weight: 500; color: var(--text-muted); }
+/* aviso legível sobre o fundo azul da página Meus pedidos */
+.meus-pedidos .carrinho-erro { background: #fff; border-radius: 10px; padding: 0.6rem 0.9rem; }

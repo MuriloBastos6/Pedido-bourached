@@ -4,6 +4,8 @@ import { useCarrinho } from "../context/CarrinhoContext.jsx";
 import { clienteStorage, pedidosStorage } from "../storage/pedidosStorage.js";
 import {
   abrirWhatsApp,
+  cnpjValido,
+  formatarCnpj,
   formatarPreco,
   gerarNumeroPedido,
   montarMensagemWhatsApp,
@@ -44,9 +46,14 @@ function CarrinhoDrawer() {
       setErro("Informe seu nome para finalizar o pedido.");
       return;
     }
+    const cnpj = cliente.cnpj.trim();
+    if (cnpj && !cnpjValido(cnpj)) {
+      setErro("Confira o CNPJ: ele tem 14 números e os dígitos finais não conferem.");
+      return;
+    }
     if (itens.length === 0) return;
 
-    const clienteLimpo = { nome, telefone: cliente.telefone.trim() };
+    const clienteLimpo = { nome, cnpj, telefone: cliente.telefone.trim() };
     const pedido = {
       numero: gerarNumeroPedido(),
       criadoEm: new Date().toISOString(),
@@ -165,7 +172,7 @@ function CarrinhoDrawer() {
 
             <div className="carrinho-campos">
               <label>
-                Seu nome *
+                Seu nome ou empresa *
                 <input
                   type="text"
                   value={cliente.nome}
@@ -174,6 +181,21 @@ function CarrinhoDrawer() {
                   }
                   autoComplete="name"
                   placeholder="Ex.: Maria da Silva"
+                />
+              </label>
+              <label>
+                <span>
+                  CNPJ <small>(opcional)</small>
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={cliente.cnpj}
+                  onChange={(e) =>
+                    setCliente({ ...cliente, cnpj: formatarCnpj(e.target.value) })
+                  }
+                  placeholder="00.000.000/0000-00"
+                  maxLength={18}
                 />
               </label>
               <label>

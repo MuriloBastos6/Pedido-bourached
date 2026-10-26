@@ -262,6 +262,7 @@ function AtendentePage() {
           <div className="atendente-cab">
             <strong>Pedido #{cabecalho.numero}</strong>
             <span>Cliente: {cabecalho.cliente}</span>
+            {cabecalho.cnpj && <span>CNPJ: {cabecalho.cnpj}</span>}
             {cabecalho.telefone && <span>Tel.: {cabecalho.telefone}</span>}
             {cabecalho.obs && <span>Obs.: {cabecalho.obs}</span>}
           </div>

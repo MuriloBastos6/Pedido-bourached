@@ -1,7 +1,8 @@
 // Testa o leitor de pedidos com a lista real (bourached-dados): node scripts/teste-lancador.mjs
 // Para testar outra lista: PRODUTOS_URL=http://localhost:5174/produtos.json node scripts/teste-lancador.mjs
 import { montarIndice, lerTextoLivre, lerMensagemDoSite, ehMensagemDoSite, textoParaFlutt, extrairQtd } from "../src/utils/lancador.js";
-import { montarMensagemWhatsApp } from "../src/utils/pedido.js";
+import { montarMensagemWhatsApp, cnpjValido, formatarCnpj } from "../src/utils/pedido.js";
+import { acharNoCatalogo } from "../src/utils/catalogo.js";
 
 const PRODUTOS_URL = process.env.PRODUTOS_URL || "https://bourached-dados.vercel.app/produtos.json";
 const dados = await fetch(PRODUTOS_URL, { cache: "no-cache" }).then((r) => {
@@ -18,7 +19,7 @@ const ok = (cond, msg) => { if (!cond) { falhas++; console.log("  FALHOU:", msg)
 
 console.log("1) Mensagem gerada pelo site (ida e volta)");
 const pedido = {
-  numero: "261026-0545-AB", cliente: { nome: "Maria da Silva", telefone: "(11) 99999-9999" }, observacao: "Retirar na loja",
+  numero: "261026-0545-AB", cliente: { nome: "Maria da Silva", cnpj: "11.222.333/0001-81", telefone: "(11) 99999-9999" }, observacao: "Retirar na loja",
   itens: [
     { descricao: "BALA JUJUBA", pesoLabel: "10KG - CX", qtd: 3, codigo: "3124", precoVenda: 161 },
     { descricao: "BALA DE GOMA", pesoLabel: "5KG - PC", qtd: 2, codigo: "2674", precoVenda: 60.5 },
@@ -32,6 +33,7 @@ ok(r.itens[0].codigo === "3124" && r.itens[0].qtd === 3, "item 1 = 3124 x3");
 ok(r.itens[1].codigo === "2674" && r.itens[1].qtd === 2, "item 2 = 2674 x2");
 ok(r.cabecalho.cliente === "Maria da Silva" && r.cabecalho.numero === "261026-0545-AB", "cabeçalho");
 ok(r.cabecalho.obs === "Retirar na loja", "obs");
+ok(r.cabecalho.cnpj === "11.222.333/0001-81", "CNPJ no cabeçalho");
 console.log(textoParaFlutt(r.itens));
 
 console.log("\n2) Quantidade em frases");
@@ -55,5 +57,18 @@ livres.forEach(([t, esperado]) => {
   console.log(`  "${t}" -> ${e ? e.codigo + " " + e.descricao + " " + e.pesoLabel : "—"} [${l.confianca}] qtd ${l.qtd}`);
   if (esperado) ok(e && e.codigo === esperado, `"${t}" deveria dar ${esperado}`);
 });
+console.log("\nRepetir pedido: itens salvos com id antigo da busca");
+const [algum] = mapa.values();
+const idBusca = `${algum.produto.categoria}-${algum.produto.id}`;
+const achado = acharNoCatalogo(mapa, { produtoId: idBusca, codigo: algum.variacao.codigo });
+ok(achado && achado.produto.id === algum.produto.id, `"${idBusca}" deveria ser encontrado pelo código`);
+ok(!acharNoCatalogo(mapa, { produtoId: "nao-existe", codigo: "000000" }), "código inexistente não deveria achar nada");
+
+console.log("CNPJ");
+ok(cnpjValido("11.222.333/0001-81"), "CNPJ válido");
+ok(!cnpjValido("11.222.333/0001-82"), "dígito errado");
+ok(!cnpjValido("11.111.111/1111-11"), "dígitos repetidos");
+ok(formatarCnpj("11222333000181") === "11.222.333/0001-81", "máscara");
+
 console.log(falhas ? `\n${falhas} falha(s)` : "\nTudo certo");
 process.exit(falhas ? 1 : 0);

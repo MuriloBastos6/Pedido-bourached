@@ -12,6 +12,33 @@ export function formatarPeso(variacao = {}) {
   return `${variacao.pesoValor}${variacao.pesoUnidade} - ${variacao.unidade}`;
 }
 
+// Máscara enquanto digita: "12345678000190" -> "12.345.678/0001-90"
+export function formatarCnpj(texto = "") {
+  const d = String(texto).replace(/\D/g, "").slice(0, 14);
+  return d
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
+// Confere os dois dígitos verificadores do CNPJ.
+export function cnpjValido(texto = "") {
+  const d = String(texto).replace(/\D/g, "");
+  if (d.length !== 14 || /^(\d)\1+$/.test(d)) return false;
+  const digito = (base) => {
+    const pesos = base.length === 12
+      ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+      : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const soma = pesos.reduce((t, p, i) => t + p * Number(base[i]), 0);
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+  const primeiro = digito(d.slice(0, 12));
+  const segundo = digito(d.slice(0, 12) + primeiro);
+  return d.endsWith(`${primeiro}${segundo}`);
+}
+
 export function chaveItem(produtoId, codigo) {
   return `${produtoId}|${codigo}`;
 }
@@ -36,6 +63,9 @@ export function montarMensagemWhatsApp(pedido) {
   linhas.push("🛒 *PEDIDO MONTADO*");
   linhas.push(`Pedido: *#${pedido.numero}*`);
   linhas.push(`Cliente: *${pedido.cliente.nome}*`);
+  if (pedido.cliente.cnpj) {
+    linhas.push(`CNPJ: ${pedido.cliente.cnpj}`);
+  }
   if (pedido.cliente.telefone) {
     linhas.push(`Telefone: ${pedido.cliente.telefone}`);
   }

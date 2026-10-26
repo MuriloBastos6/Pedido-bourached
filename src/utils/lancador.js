@@ -116,7 +116,7 @@ export function ehMensagemDoSite(texto) {
 }
 
 export function lerMensagemDoSite(texto) {
-  const cab = { numero: "", cliente: "", telefone: "", obs: "" };
+  const cab = { numero: "", cliente: "", cnpj: "", telefone: "", obs: "" };
   const itens = [];
   let atual = null;
   const fechar = () => { if (atual && atual.codigo) itens.push(atual); atual = null; };
@@ -127,6 +127,7 @@ export function lerMensagemDoSite(texto) {
     let m;
     if ((m = /^Pedido\s*:\s*\*?#?([^*]+)\*?/i.exec(linha))) cab.numero = m[1].trim();
     else if ((m = /^Cliente\s*:\s*\*?([^*]+)\*?/i.exec(linha))) cab.cliente = m[1].trim();
+    else if ((m = /^CNPJ\s*:\s*(.+)/i.exec(linha))) cab.cnpj = m[1].trim();
     else if ((m = /^Telefone\s*:\s*(.+)/i.exec(linha))) cab.telefone = m[1].trim();
     else if ((m = /^Obs\w*\s*:\s*(.+)/i.exec(linha))) cab.obs = m[1].trim();
     else if ((m = /^(\d+)\s*\)\s*\*?(.+?)\*?\s*$/.exec(linha))) {

@@ -3,7 +3,7 @@ import { chaveItem } from "./pedido.js";
 // Os produtos e as imagens ficam no repositório bourached-dados, compartilhado
 // pelos sites. A URL vem do .env (VITE_PRODUTOS_URL).
 export const PRODUTOS_URL =
-  import.meta.env.VITE_PRODUTOS_URL || "https://bourached-dados.vercel.app/produtos.json";
+  import.meta.env?.VITE_PRODUTOS_URL || "https://bourached-dados.vercel.app/produtos.json";
 
 let promessaDados = null;
 let promessa = null;
@@ -112,6 +112,21 @@ export function ordenarProdutos(produtos = [], ordem = "padrao") {
     lista.sort((a, b) => menorPreco(b) - menorPreco(a));
   }
   return lista;
+}
+
+// Acha um item de carrinho/pedido no catálogo. Primeiro pela chave
+// "idProduto|codigo"; se não achar, pelo código da embalagem (que é único).
+// O código recupera itens salvos com id diferente, como os que vinham da
+// busca com o id prefixado pela categoria ("graos-canjica-branca").
+export function acharNoCatalogo(catalogo, { produtoId, codigo }) {
+  const direto = catalogo.get(chaveItem(produtoId, codigo));
+  if (direto) return direto;
+  const codigoTexto = String(codigo ?? "").trim();
+  if (!codigoTexto) return null;
+  for (const achado of catalogo.values()) {
+    if (String(achado.variacao.codigo).trim() === codigoTexto) return achado;
+  }
+  return null;
 }
 
 // Map "idProduto|codigo" -> { produto, variacao }

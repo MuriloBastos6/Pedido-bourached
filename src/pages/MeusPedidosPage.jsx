@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCarrinho } from "../context/CarrinhoContext.jsx";
 import { pedidosStorage } from "../storage/pedidosStorage.js";
-import { carregarCatalogo } from "../utils/catalogo.js";
+import { acharNoCatalogo, carregarCatalogo } from "../utils/catalogo.js";
 import {
   abrirWhatsApp,
-  chaveItem,
   formatarPreco,
   montarMensagemWhatsApp,
 } from "../utils/pedido.js";
@@ -38,7 +37,7 @@ function MeusPedidosPage() {
       const catalogo = await carregarCatalogo();
       let faltando = 0;
       pedido.itens.forEach((item) => {
-        const achado = catalogo.get(chaveItem(item.produtoId, item.codigo));
+        const achado = acharNoCatalogo(catalogo, item);
         if (!achado) {
           faltando += 1;
           return;
@@ -48,7 +47,9 @@ function MeusPedidosPage() {
       });
       if (faltando > 0) {
         setAviso(
-          `${faltando} ${faltando === 1 ? "item não está" : "itens não estão"} mais disponível(is) na lista e não foi adicionado.`,
+          faltando === 1
+            ? "1 item não está mais disponível na lista e não foi adicionado."
+            : `${faltando} itens não estão mais disponíveis na lista e não foram adicionados.`,
         );
       }
       abrirCarrinho();

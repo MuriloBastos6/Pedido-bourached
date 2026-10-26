@@ -9,7 +9,7 @@ import {
 } from "react";
 import { QTD_MAX_ITEM } from "../config.js";
 import { carrinhoStorage } from "../storage/pedidosStorage.js";
-import { carregarCatalogo } from "../utils/catalogo.js";
+import { acharNoCatalogo, carregarCatalogo } from "../utils/catalogo.js";
 import {
   chaveItem,
   formatarPeso,
@@ -70,17 +70,27 @@ export function CarrinhoProvider({ children }) {
         if (cancelado) return;
         const atual = carrinhoStorage.ler();
         if (atual.length === 0) return;
-        const atualizados = atual
-          .filter((i) => catalogo.has(i.key))
-          .map((i) => {
-            const { produto, variacao } = catalogo.get(i.key);
-            return {
-              ...i,
-              descricao: produto.descricao,
-              pesoLabel: formatarPeso(variacao),
-              precoVenda: variacao.precoVenda,
-            };
+        // Junta itens que apontam para a mesma embalagem (ex.: salvos com id
+        // antigo) e corrige a chave para a do catálogo.
+        const porChave = new Map();
+        atual.forEach((i) => {
+          const achado = acharNoCatalogo(catalogo, i);
+          if (!achado) return;
+          const { produto, variacao } = achado;
+          const key = chaveItem(produto.id, variacao.codigo);
+          const anterior = porChave.get(key);
+          porChave.set(key, {
+            ...i,
+            key,
+            produtoId: produto.id,
+            descricao: produto.descricao,
+            codigo: variacao.codigo,
+            pesoLabel: formatarPeso(variacao),
+            precoVenda: variacao.precoVenda,
+            qtd: limitar((anterior?.qtd || 0) + i.qtd),
           });
+        });
+        const atualizados = [...porChave.values()];
         dispatch({ tipo: "sincronizar", itens: atualizados });
       })
       .catch(() => {});
