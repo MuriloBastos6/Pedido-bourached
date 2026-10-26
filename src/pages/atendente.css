@@ -1,0 +1,80 @@
+.atendente { width: 100%; box-sizing: border-box; padding: 0.9rem; }
+.atendente-conteudo { max-width: 860px; margin: 0 auto; padding: 1rem 0.6rem 2.5rem; color: #fff; }
+.atendente h1 { margin: 0 0 0.3rem; color: #fff; font-family: "Outfit", sans-serif; }
+.atendente-nota { margin: 0 0 1rem; color: #dbe7ff; font-size: 0.95rem; }
+
+.atendente-texto {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.8rem;
+  border: 2px solid #ffe100;
+  border-radius: 12px;
+  resize: vertical;
+}
+.atendente-botoes, .atendente-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 0.8rem 0; }
+.atendente .btn-finalizar { width: auto; padding: 0 1.4rem; }
+.atendente .btn-finalizar:disabled { opacity: 0.5; cursor: not-allowed; }
+.carrinho-link.claro { color: #fff; }
+
+.atendente-cab {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
+  background: rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 0.7rem 0.9rem; margin: 0.6rem 0;
+}
+.atendente-resumo {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; align-items: center; margin: 0.8rem 0 0.5rem; font-size: 0.95rem;
+}
+.aviso-revisar { background: #ffe100; color: #5a4200; font-weight: 800; border-radius: 999px; padding: 0.15rem 0.7rem; }
+
+.atendente-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.atendente-linha {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "check info qtd" "sel sel sel";
+  gap: 0.5rem 0.8rem;
+  align-items: center;
+  background: #fff;
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  border-left: 6px solid #25d366;
+}
+.atendente-linha.conf-revisar { border-left-color: #ffb300; }
+.atendente-linha.conf-baixa, .atendente-linha.conf-nenhuma { border-left-color: #d90429; }
+.atendente-linha.feito { opacity: 0.45; }
+.atendente-check { grid-area: check; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 0.2rem; cursor: pointer; }
+.atendente-check input { width: 26px; height: 26px; accent-color: #25d366; }
+.atendente-info { grid-area: info; display: flex; gap: 0.7rem; align-items: center; min-width: 0; }
+.atendente-info > div:last-child { display: flex; flex-direction: column; min-width: 0; }
+.atendente-info small { color: var(--text-muted); font-size: 0.78rem; }
+.atendente-info .original { font-style: italic; }
+.atendente-info .nota { color: #b45309; font-weight: 700; }
+.atendente-codigo {
+  font-family: "Outfit", monospace; font-weight: 800; font-size: 1.35rem; color: #001cb9;
+  background: #eaf0ff; border-radius: 10px; padding: 0.3rem 0.6rem; min-width: 3.4rem; text-align: center;
+}
+.atendente-select { grid-area: sel; width: 100%; font-family: inherit; font-size: 0.9rem; padding: 0.45rem; border-radius: 8px; border: 1px solid #c4cfdf; }
+.atendente-qtd { grid-area: qtd; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+.atendente-qtd .qtd-controle button { width: 40px; height: 38px; }
+
+.atendente-busca { margin: 1rem 0; }
+.atendente-busca label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 700; font-size: 0.9rem; }
+.atendente-busca input { font-family: inherit; font-size: 1rem; padding: 0.65rem 0.8rem; border-radius: 10px; border: 1px solid #c4cfdf; }
+.atendente-resultados { list-style: none; margin: 0.4rem 0 0; padding: 0; background: #fff; border-radius: 10px; overflow: hidden; }
+.atendente-resultados button {
+  width: 100%; text-align: left; border: none; background: none; padding: 0.7rem 0.8rem; font-family: inherit; font-size: 0.92rem;
+  color: var(--text-primary); border-bottom: 1px solid #eef1f6; cursor: pointer; min-height: 44px;
+}
+.atendente-resultados button:hover { background: #f3f6fb; }
+
+.atendente-toast {
+  position: fixed; left: 50%; bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: #0a2162; color: #fff; padding: 0.7rem 1.1rem; border-radius: 999px; font-weight: 700; z-index: 3000;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 640px) {
+  .atendente-linha { grid-template-columns: auto 1fr; grid-template-areas: "check info" "sel sel" "qtd qtd"; }
+  .atendente-qtd { flex-direction: row; justify-content: space-between; align-items: center; }
+}
