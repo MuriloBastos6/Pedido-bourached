@@ -1,63 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import ProdutosGrid from "../components/ProdutosGrid";
-import "./produtoPage.css";
-
-const ordemCategorias = [
-  "amendoim",
-  "arroz",
-  "sucrilhos",
-  "cha",
-  "farinhas",
-  "graos",
-  "panificacao",
-  "especiarias",
-  "frutas",
-  "sementes",
-  "produtosnaturais",
-  "refris",
-  "oleo",
-  "goma",
-  "salgadinhos",
-  "doces",
-  "potes",
-];
-
-const capasPorSlug = {
-  amendoim: "/amendoim.jpeg",
-  arroz: "/arroz.jpeg",
-  sucrilhos: "/sucrilhos.jpeg",
-  cha: "/cha.jpeg",
-  farinhas: "/farinhas.jpeg",
-  graos: "/graos.jpeg",
-  panificacao: "/panificacoes.jpeg",
-  especiarias: "/especiarias.jpeg",
-  frutas: "/frutas.jpeg",
-  sementes: "/sementes.jpeg",
-  produtosnaturais: "/produtosnaturais.jpeg",
-  refris: "/refris.jpeg",
-  oleo: "/oleo.jpeg",
-  goma: "/Goma.png",
-  salgadinhos: "/salgadinho.jpeg",
-  doces: "/doces.jpeg",
-  potes: "/pote.jpeg",
-};
-
-function normalizarTexto(texto = "") {
-  return texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
-
-function ehSlugPromocao(slug = "") {
-  const slugNormalizado = normalizarTexto(slug);
-  return ["promocao", "promocoes"].some((termo) =>
-    slugNormalizado.includes(termo),
-  );
-}
+import ListagemLoja from "../components/ListagemLoja.jsx";
+import { useDados } from "../hooks/useDados.js";
+import { ehChavePromocao, extrairPromocoes, normalizarTexto } from "../utils/catalogo.js";
 
 function montarCodigos(produto) {
   const variacoes = Array.isArray(produto.variacoes) ? produto.variacoes : [];
@@ -70,78 +15,43 @@ function montarCodigos(produto) {
 function BuscaPage() {
   const [searchParams] = useSearchParams();
   const termo = searchParams.get("q") || "";
-  const [todosProdutos, setTodosProdutos] = useState([]);
-  const [carregando, setCarregando] = useState(true);
+  const { dados, carregando, erro } = useDados();
 
-  useEffect(() => {
-    document.body.classList.add("produtos-page-body");
-    return () => {
-      document.body.classList.remove("produtos-page-body");
-    };
-  }, []);
+  // Todos os produtos uma vez só. O item de promoção some quando o mesmo
+  // produto já existe na categoria própria (evita cards duplicados).
+  const todosProdutos = useMemo(() => {
+    if (!dados) return [];
+    const promocoes = extrairPromocoes(dados);
+    const idsPromocao = new Set(promocoes.map((p) => String(p.id)));
+    const vistos = new Set();
+    const lista = [];
 
-  useEffect(() => {
-    let cancelado = false;
+    Object.entries(dados).forEach(([slug, itens]) => {
+      if (!Array.isArray(itens) || ehChavePromocao(slug)) return;
+      itens.forEach((produto, index) => {
+        const idOriginal = String(produto.id ?? index);
+        vistos.add(idOriginal);
+        lista.push({
+          ...produto,
+          id: `${slug}-${idOriginal}`,
+          isPromocao: idsPromocao.has(idOriginal),
+          codigosBusca: montarCodigos(produto),
+        });
+      });
+    });
 
-    async function carregarProdutos() {
-      try {
-        const response = await fetch("/produtos.json");
-        if (!response.ok) {
-          throw new Error("Falha ao carregar produtos");
-        }
+    promocoes.forEach((produto, index) => {
+      const idOriginal = String(produto.id ?? index);
+      if (vistos.has(idOriginal)) return;
+      lista.push({
+        ...produto,
+        id: `promocoes-${idOriginal}`,
+        codigosBusca: montarCodigos(produto),
+      });
+    });
 
-        const dadosPorCategoria = await response.json();
-        if (!dadosPorCategoria || typeof dadosPorCategoria !== "object") {
-          throw new Error("Formato de produtos invalido");
-        }
-
-        const respostas = Object.entries(dadosPorCategoria).flatMap(
-          ([slug, itens]) => {
-            if (!Array.isArray(itens)) return [];
-
-            return itens.map((produto, index) => ({
-              ...produto,
-              id: `${slug}-${produto.id ?? index}`,
-              idOriginal: String(produto.id ?? index),
-              slug,
-              isPromocao: ehSlugPromocao(slug),
-              codigosBusca: montarCodigos(produto),
-            }));
-          },
-        );
-
-        // Remove o item de promoção quando o mesmo produto já existe na
-        // categoria própria, evitando cards duplicados na busca.
-        const idsNaoPromocao = new Set(
-          respostas
-            .filter((produto) => !produto.isPromocao)
-            .map((produto) => produto.idOriginal),
-        );
-        const respostasSemDuplicatas = respostas.filter(
-          (produto) =>
-            !(produto.isPromocao && idsNaoPromocao.has(produto.idOriginal)),
-        );
-
-        if (!cancelado) {
-          setTodosProdutos(respostasSemDuplicatas);
-        }
-      } catch {
-        if (!cancelado) {
-          setTodosProdutos([]);
-        }
-      } finally {
-        if (!cancelado) {
-          setCarregando(false);
-        }
-      }
-    }
-
-    carregarProdutos();
-
-    return () => {
-      cancelado = true;
-    };
-  }, []);
+    return lista;
+  }, [dados]);
 
   const resultados = useMemo(() => {
     const termoNormalizado = normalizarTexto(termo);
@@ -153,46 +63,18 @@ function BuscaPage() {
     });
   }, [todosProdutos, termo]);
 
-  const slugReferencia = useMemo(() => {
-    const slugResultado = resultados.find((item) =>
-      ordemCategorias.includes(item.slug),
-    )?.slug;
-    return slugResultado || ordemCategorias[0];
-  }, [resultados]);
-
-  const capaBusca = useMemo(
-    () => capasPorSlug[slugReferencia] || "/arroz.jpeg",
-    [slugReferencia],
-  );
-
   return (
-    <section className="produtosPage">
-
-      <div
-        className="titulo-container"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.12) 20%, rgba(0, 0, 0, 0.56) 100%), url(${capaBusca})`,
-        }}
-      >
-        <h1>Resultado da busca</h1>
-      </div>
-
-      <div className="conteudo-container">
-        {carregando && <p>Carregando produtos...</p>}
-
-        {!carregando && !termo && (
-          <p>Digite algo na barra de pesquisa para buscar produtos.</p>
-        )}
-
-        {!carregando && termo && resultados.length === 0 && (
-          <p>Produto não encontrado.</p>
-        )}
-
-        {!carregando && resultados.length > 0 && (
-          <ProdutosGrid produtos={resultados} />
-        )}
-      </div>
-    </section>
+    <ListagemLoja
+      titulo={termo ? `Resultados para “${termo}”` : "Buscar produtos"}
+      produtos={resultados}
+      carregando={carregando}
+      erro={erro}
+      vazio={
+        termo
+          ? "Produto não encontrado. Tente outro nome ou o código."
+          : "Digite algo na barra de pesquisa para buscar produtos."
+      }
+    />
   );
 }
 

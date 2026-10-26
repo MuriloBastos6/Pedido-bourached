@@ -9,7 +9,6 @@ import {
   formatarPreco,
   montarMensagemWhatsApp,
 } from "../utils/pedido.js";
-import "./produtoPage.css";
 
 function formatarData(iso) {
   const data = new Date(iso);

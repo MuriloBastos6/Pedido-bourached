@@ -14,7 +14,7 @@ function Footer() {
           aria-label="Marca Bourached"
         >
           <img
-            src="logoBourached.png"
+            src="/logo-bourached-branco.png"
             alt="Logo da Bourached"
             className="footer-logo"
           />

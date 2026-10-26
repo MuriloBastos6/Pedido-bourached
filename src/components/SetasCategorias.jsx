@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { categorias } from "./Categorias.jsx";
+import { categorias } from "../utils/categorias.js";
 
 // Ciclo de navegação: Ofertas (home) -> categorias... -> volta às Ofertas
 const sequencia = [

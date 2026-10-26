@@ -12,8 +12,8 @@ function IconeCarrinho({ className }) {
   );
 }
 
-// variante "flutuante": círculo no desktop + barra inferior no celular (só com itens)
-// variante "topo": botão no cabeçalho (celular)
+// variante "topo": botão do cabeçalho (ícone + total)
+// variante "flutuante": barra inferior no celular (só com itens)
 function BotaoCarrinho({ variante = "flutuante" }) {
   const { totalItens, total, abrirCarrinho } = useCarrinho();
   const rotulo = `Abrir carrinho, ${totalItens} ${totalItens === 1 ? "item" : "itens"}`;
@@ -22,42 +22,35 @@ function BotaoCarrinho({ variante = "flutuante" }) {
     return (
       <button
         type="button"
-        className="carrinho-header-btn"
+        className="topo-acao carrinho-header-btn"
         onClick={abrirCarrinho}
         aria-label={rotulo}
       >
-        <IconeCarrinho className="carrinho-icon" />
-        {totalItens > 0 && <span className="carrinho-badge">{totalItens}</span>}
+        <span className="topo-acao-icone">
+          <IconeCarrinho className="carrinho-icon" />
+          {totalItens > 0 && <span className="carrinho-badge">{totalItens}</span>}
+        </span>
+        <span className="topo-acao-texto">
+          <strong>Carrinho</strong>
+          <small>{totalItens > 0 ? formatarPreco(total) : "Ver carrinho"}</small>
+        </span>
       </button>
     );
   }
 
-  return (
-    <>
-      <button
-        type="button"
-        className="carrinho-float"
-        onClick={abrirCarrinho}
-        aria-label={rotulo}
-        title="Meu pedido"
-      >
-        <IconeCarrinho className="carrinho-icon" />
-        {totalItens > 0 && <span className="carrinho-badge">{totalItens}</span>}
-      </button>
+  if (totalItens === 0) return null;
 
-      {totalItens > 0 && (
-        <button
-          type="button"
-          className="carrinho-barra"
-          onClick={abrirCarrinho}
-          aria-label={rotulo}
-        >
-          <span className="carrinho-barra-qtd">{totalItens}</span>
-          <span className="carrinho-barra-texto">Ver meu pedido</span>
-          <strong>{formatarPreco(total)}</strong>
-        </button>
-      )}
-    </>
+  return (
+    <button
+      type="button"
+      className="carrinho-barra"
+      onClick={abrirCarrinho}
+      aria-label={rotulo}
+    >
+      <span className="carrinho-barra-qtd">{totalItens}</span>
+      <span className="carrinho-barra-texto">Ver meu pedido</span>
+      <strong>{formatarPreco(total)}</strong>
+    </button>
   );
 }
 

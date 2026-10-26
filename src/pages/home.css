@@ -1,0 +1,306 @@
+/* ===== Página inicial ===== */
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--azul);
+  color: #fff;
+}
+
+/* Fotos alternando à direita, fundindo com o azul da marca */
+.hero-fundo {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 64%;
+  z-index: -2;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+}
+
+.hero-fundo span {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: 40% 40%;
+  opacity: 0;
+  animation: hero-foto 24s linear infinite backwards;
+}
+
+/* 4 fotos x 6s = 24s: entra, fica com zoom lento e sai em fade */
+@keyframes hero-foto {
+  0% { opacity: 0; transform: scale(1.12); }
+  5% { opacity: 1; }
+  25% { opacity: 1; }
+  30% { opacity: 0; transform: scale(1.26); }
+  100% { opacity: 0; transform: scale(1.26); }
+}
+
+/* véu azul para o texto ficar legível e brilho amarelo da marca */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 88% 15%, rgba(255, 225, 0, 0.22), transparent 35%),
+    linear-gradient(90deg, var(--azul) 30%, rgba(0, 28, 185, 0.45) 50%, rgba(0, 28, 185, 0) 72%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-fundo span { animation: none; }
+  .hero-fundo span:first-child { opacity: 1; }
+}
+
+.hero-inner {
+  width: var(--largura);
+  margin: 0 auto;
+  min-height: 470px;
+  display: flex;
+  align-items: center;
+  padding: 3rem 0 5rem;
+}
+
+.hero-texto {
+  max-width: 560px;
+  text-shadow: 0 2px 18px rgba(0, 10, 70, 0.35);
+}
+
+.hero-etiqueta {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: var(--amarelo);
+  color: var(--azul-escuro);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0.9rem 0 0.7rem;
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2rem, 4.2vw, 3.3rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.hero h1 em {
+  display: block;
+  font-style: normal;
+  color: var(--amarelo);
+}
+
+.hero p {
+  max-width: 30rem;
+  margin: 0;
+  color: #dce4ff;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+.hero-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-hero:hover {
+  transform: translateY(-1px);
+}
+
+.btn-hero.primario {
+  background: var(--amarelo);
+  color: var(--azul-escuro);
+}
+
+.btn-hero.primario:hover {
+  background: var(--amarelo-escuro);
+}
+
+.btn-hero.secundario {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.btn-hero.secundario:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Faixa de benefícios sobreposta ao hero */
+.beneficios {
+  position: relative;
+  width: var(--largura);
+  margin: -2.4rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  padding: 1.1rem 0.5rem;
+}
+
+.beneficio {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1rem;
+}
+
+.beneficio + .beneficio {
+  border-left: 1px solid var(--borda);
+}
+
+.beneficio-icone {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--azul-claro);
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+}
+
+.beneficio strong {
+  color: var(--azul);
+  font-size: 0.93rem;
+}
+
+.beneficio p {
+  margin: 0.1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.home-conteudo {
+  width: var(--largura);
+  margin: 0 auto;
+}
+
+/* Atalhos redondos de categoria */
+.atalhos-trilho {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding: 0.3rem 0.2rem 0.5rem;
+}
+
+.atalhos-trilho::-webkit-scrollbar {
+  display: none;
+}
+
+.atalho {
+  flex: 0 0 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  scroll-snap-align: start;
+}
+
+.atalho-foto {
+  width: 94px;
+  height: 94px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 2px var(--borda);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.atalho:hover .atalho-foto {
+  box-shadow: 0 0 0 3px var(--amarelo);
+  transform: translateY(-2px);
+}
+
+/* Faixa amarela de chamada */
+.faixa-destaque {
+  margin-top: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.3rem 1.6rem;
+  border-radius: 18px;
+  background: var(--amarelo);
+  color: var(--azul-escuro);
+}
+
+.faixa-destaque p {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.2rem;
+}
+
+.faixa-destaque .btn-hero.primario {
+  background: var(--azul);
+  color: #fff;
+}
+
+/* Grade "Todas as categorias" */
+.grade-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.cartao-categoria {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.cartao-categoria:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.cartao-categoria-foto {
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+}
+
+.cartao-categoria-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.cartao-categoria-info small {
+  color: var(--azul);
+  font-weight: 700;
+}

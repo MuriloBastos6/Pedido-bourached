@@ -1,170 +1,39 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import "./produtoPage.css";
-import ProdutosGrid from "../components/ProdutosGrid";
-import SetasCategorias from "../components/SetasCategorias";
-
-const categoriasValidas = new Set([
-  "amendoim",
-  "arroz",
-  "sucrilhos",
-  "cha",
-  "farinhas",
-  "graos",
-  "panificacao",
-  "especiarias",
-  "frutas",
-  "sementes",
-  "produtosnaturais",
-  "refris",
-  "oleo",
-  "goma",
-  "salgadinhos",
-  "doces",
-  "potes",
-]);
-
-const titulos = {
-  amendoim: "Amendoim",
-  arroz: "Arroz",
-  sucrilhos: "Sucrilhos",
-  cha: "Cha",
-  farinhas: "Farinhas",
-  graos: "Graos",
-  panificacao: "Panificacao",
-  especiarias: "Especiarias",
-  frutas: "Frutas",
-  sementes: "Sementes",
-  produtosnaturais: "Produtos Naturais",
-  refris: "Refris",
-  oleo: "Oleo",
-  goma: "Goma",
-  salgadinhos: "Salgadinhos",
-  doces: "Doces",
-  potes: "Potes",
-};
-
-const capasPorSlug = {
-  amendoim: "/amendoim.jpeg",
-  arroz: "/arroz.jpeg",
-  sucrilhos: "/sucrilhos.jpeg",
-  cha: "/cha.jpeg",
-  farinhas: "/farinhas.jpeg",
-  graos: "/graos.jpeg",
-  panificacao: "/panificacoes.jpeg",
-  especiarias: "/especiarias.jpeg",
-  frutas: "/frutas.jpeg",
-  sementes: "/sementes.jpeg",
-  produtosnaturais: "/produtosnaturais.jpeg",
-  refris: "/refris.jpeg",
-  oleo: "/oleo.jpeg",
-  goma: "/Goma.png",
-  salgadinhos: "/salgadinho.jpeg",
-  doces: "/doces.jpeg",
-  potes: "/pote.jpeg",
-};
+import ListagemLoja from "../components/ListagemLoja.jsx";
+import SetasCategorias from "../components/SetasCategorias.jsx";
+import { buscarCategoria, promocoes } from "../utils/categorias.js";
+import { useDados } from "../hooks/useDados.js";
+import { extrairPromocoes, produtosDaCategoria } from "../utils/catalogo.js";
 
 function CategoriaPage() {
   const { slug } = useParams();
-  const [produtos, setProdutos] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
+  const categoria = buscarCategoria(slug);
+  const { dados, carregando, erro } = useDados();
 
-  const categoriaValida = categoriasValidas.has(slug);
+  const produtos = useMemo(() => {
+    if (!dados || !categoria) return [];
+    return slug === promocoes.slug
+      ? extrairPromocoes(dados)
+      : produtosDaCategoria(dados, slug);
+  }, [dados, slug, categoria]);
 
-  useEffect(() => {
-    document.body.classList.add("produtos-page-body");
-    return () => {
-      document.body.classList.remove("produtos-page-body");
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!categoriaValida) return;
-
-    let cancelado = false;
-    setCarregando(true);
-    setErro("");
-
-    fetch("/produtos.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Falha ao buscar produtos");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!cancelado) {
-          const produtosCategoria = Array.isArray(data?.[slug])
-            ? data[slug]
-            : [];
-          const itensPromocao =
-            (Array.isArray(data?.promoçoes) && data.promoçoes) ||
-            (Array.isArray(data?.promoções) && data.promoções) ||
-            (Array.isArray(data?.promocoes) && data.promocoes) ||
-            (Array.isArray(data?.promocao) && data.promocao) ||
-            [];
-
-          const idsPromocao = new Set(
-            itensPromocao
-              .map((item) => String(item?.id || "").trim())
-              .filter(Boolean),
-          );
-
-          const produtosComSelo = produtosCategoria.map((produto) => ({
-            ...produto,
-            isPromocao: idsPromocao.has(String(produto?.id || "").trim()),
-          }));
-
-          setProdutos(produtosComSelo);
-        }
-      })
-      .catch(() => {
-        if (!cancelado) {
-          setProdutos([]);
-          setErro("Nao foi possivel carregar os produtos.");
-        }
-      })
-      .finally(() => {
-        if (!cancelado) {
-          setCarregando(false);
-        }
-      });
-
-    return () => {
-      cancelado = true;
-    };
-  }, [slug, categoriaValida]);
-
-  const titulo = useMemo(() => titulos[slug] || "Categoria", [slug]);
-  const capaCategoria = useMemo(
-    () => capasPorSlug[slug] || "/banner.png",
-    [slug],
-  );
-
-  if (!categoriaValida) {
+  if (!categoria) {
     return <Navigate to="/" replace />;
   }
 
   return (
-    <section className="produtosPage">
-      <div
-        className="titulo-container"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.12) 20%, rgba(0, 0, 0, 0.56) 100%), url(${capaCategoria})`,
-        }}
-      >
-        <h1>{titulo}</h1>
-      </div>
-      <div className="conteudo-container">
-        {carregando && <p>Carregando produtos...</p>}
-        {!carregando && erro && <p>{erro}</p>}
-        {!carregando && !erro && (
-          <ProdutosGrid produtos={produtos} exibirSeloPromocao />
-        )}
-      </div>
-      <SetasCategorias atual={slug} />
-    </section>
+    <ListagemLoja
+      key={slug}
+      titulo={categoria.titulo}
+      produtos={produtos}
+      carregando={carregando}
+      erro={erro}
+      vazio="Nenhum produto nesta categoria no momento."
+      rodape={
+        slug !== promocoes.slug && <SetasCategorias atual={slug} />
+      }
+    />
   );
 }
 

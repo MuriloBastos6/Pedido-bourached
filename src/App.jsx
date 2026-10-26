@@ -1,9 +1,8 @@
 import Navbar from "./components/Navbar.jsx";
-import ListaDeProdutos from "./components/ListaDeProdutos.jsx";
-import SetasCategorias from "./components/SetasCategorias.jsx";
 import WhatsAppButton from "./components/WhatsAppButton.jsx";
 import Footer from "./components/Footer.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage.jsx";
 import CategoriaPage from "./pages/CategoriaPage.jsx";
 import BuscaPage from "./pages/BuscaPage.jsx";
 import MeusPedidosPage from "./pages/MeusPedidosPage.jsx";
@@ -23,15 +22,7 @@ function App() {
         <Navbar />
         <main>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <div>
-                  <ListaDeProdutos />
-                  <SetasCategorias atual={null} />
-                </div>
-              }
-            />
+            <Route path="/" element={<HomePage />} />
             <Route path="/busca" element={<BuscaPage />} />
             <Route path="/meus-pedidos" element={<MeusPedidosPage />} />
             <Route path="/atendente" element={<AtendentePage />} />

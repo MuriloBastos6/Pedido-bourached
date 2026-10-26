@@ -1,27 +1,7 @@
-import React from "react";
+import { useState } from "react";
 import BotaoAdicionar from "./BotaoAdicionar.jsx";
-
-function formatarPreco(valor) {
-  return Number(valor || 0).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
-
-function normalizarCategoria(valor = "") {
-  return String(valor)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
-
-function ehCategoriaPromocao(categoria = "") {
-  const categoriaNormalizada = normalizarCategoria(categoria);
-  return ["promocao", "promocoes"].some((termo) =>
-    categoriaNormalizada.includes(termo),
-  );
-}
+import { useCarrinho } from "../context/CarrinhoContext.jsx";
+import { chaveItem, formatarPreco } from "../utils/pedido.js";
 
 function removerExtensao(arquivo = "") {
   const semQuery = String(arquivo).split("?")[0].split("#")[0];
@@ -52,81 +32,125 @@ function montarCandidatosImagem(caminhoImagem = "") {
   return [...new Set(candidatos)];
 }
 
-function ProdutosGrid({ produtos = [], exibirSeloPromocao = false }) {
+// Rótulo curto da embalagem: "25 KG", "12X1KG"
+function rotuloPeso(v) {
+  const separador = /^x/i.test(v.pesoUnidade) ? "" : " ";
+  return `${String(v.pesoValor).replace(".", ",")}${separador}${v.pesoUnidade}`;
+}
+
+// Preço por kg quando a embalagem é vendida em KG (ex.: saco de 25 kg)
+function precoPorKg(v) {
+  const peso = Number(v.pesoValor);
+  if (String(v.pesoUnidade).toUpperCase() !== "KG" || !(peso > 1)) return null;
+  return Number(v.precoVenda) / peso;
+}
+
+function ImagemProduto({ produto }) {
+  const candidatos = montarCandidatosImagem(
+    typeof produto.imagem === "string" ? produto.imagem.trim() : "",
+  );
+
+  return (
+    <img
+      src={candidatos[0]}
+      alt={produto.descricao}
+      className="imagem-produto"
+      loading="lazy"
+      decoding="async"
+      data-fallback-index="0"
+      onError={(event) => {
+        const img = event.currentTarget;
+        const proximoIndice = Number(img.dataset.fallbackIndex || "0") + 1;
+
+        if (proximoIndice < candidatos.length) {
+          img.dataset.fallbackIndex = String(proximoIndice);
+          img.src = candidatos[proximoIndice];
+          return;
+        }
+
+        img.onerror = null;
+      }}
+    />
+  );
+}
+
+export function CardProduto({ produto, exibirSeloPromocao = true }) {
+  const { itens } = useCarrinho();
+  const variacoes = [...(produto.variacoes || [])].sort(
+    (a, b) => Number(b.pesoValor || 0) - Number(a.pesoValor || 0),
+  );
+  const [indice, setIndice] = useState(0);
+  const selecionada = variacoes[indice] || variacoes[0];
+
+  if (!selecionada) return null;
+
+  const qtdNoCarrinho = (v) =>
+    itens.find((i) => i.key === chaveItem(produto.id, v.codigo))?.qtd || 0;
+  const porKg = precoPorKg(selecionada);
+
+  return (
+    <article className="card-produto">
+      {exibirSeloPromocao && produto.isPromocao && (
+        <span className="selo-promocao">Promoção</span>
+      )}
+      <div className="card-produto-foto">
+        <ImagemProduto produto={produto} />
+      </div>
+
+      <div className="card-produto-corpo">
+        <h3 className="nome-produto" title={produto.descricao}>
+          {produto.descricao}
+        </h3>
+        <p className="codigo-produto">Cód. {selecionada.codigo}</p>
+
+        {variacoes.length > 1 && (
+          <div className="pesos" role="radiogroup" aria-label="Embalagem">
+            {variacoes.map((v, i) => {
+              const qtd = qtdNoCarrinho(v);
+              return (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={i === indice}
+                  key={v.codigo || i}
+                  className={`peso-chip ${i === indice ? "ativo" : ""}`}
+                  onClick={() => setIndice(i)}
+                  title={`${rotuloPeso(v)} · ${v.unidade}`}
+                >
+                  {rotuloPeso(v)}
+                  {qtd > 0 && <span className="peso-chip-qtd">{qtd}</span>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="card-produto-preco">
+          <small>
+            {rotuloPeso(selecionada)} · {selecionada.unidade}
+          </small>
+          <strong>{formatarPreco(selecionada.precoVenda)}</strong>
+          {porKg !== null && <span>≈ {formatarPreco(porKg)}/kg</span>}
+        </div>
+
+        <div className="acao-variacao">
+          <BotaoAdicionar produto={produto} variacao={selecionada} />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ProdutosGrid({ produtos = [], exibirSeloPromocao = true }) {
   return (
     <div className="categoria-grid">
-      {produtos.map((produto) => {
-        const imagemProduto =
-          typeof produto.imagem === "string" ? produto.imagem.trim() : "";
-        const candidatosImagem = montarCandidatosImagem(imagemProduto);
-        const mostrarSeloPromocao =
-          exibirSeloPromocao &&
-          (ehCategoriaPromocao(produto.categoria) ||
-            produto.isPromocao === true);
-        const variacoes = [...(produto.variacoes || [])].sort(
-          (a, b) => Number(b.pesoValor || 0) - Number(a.pesoValor || 0),
-        );
-
-        const codigos = variacoes
-          .map((v) => v.codigo)
-          .filter(Boolean)
-          .join(", ");
-
-        return (
-          <article className="card-produto" key={produto.id}>
-            {mostrarSeloPromocao && (
-              <span className="selo-promocao">Promoção</span>
-            )}
-            <img
-              src={candidatosImagem[0]}
-              alt={produto.descricao}
-              className="imagem-produto"
-              loading="lazy"
-              decoding="async"
-              data-fallback-index="0"
-              onError={(event) => {
-                const img = event.currentTarget;
-                const indiceAtual = Number(img.dataset.fallbackIndex || "0");
-                const proximoIndice = indiceAtual + 1;
-
-                if (proximoIndice < candidatosImagem.length) {
-                  img.dataset.fallbackIndex = String(proximoIndice);
-                  img.src = candidatosImagem[proximoIndice];
-                  return;
-                }
-
-                img.onerror = null;
-              }}
-            />
-
-            <h2 className="nome-produto">{produto.descricao}</h2>
-            <p className="codigo-produto">Cód.: {codigos}</p>
-
-            <div className="variacoes-lista">
-              {variacoes.map((v, i) => (
-                <div
-                  className="linha-variacao"
-                  key={`${produto.id}-${v.codigo || i}`}
-                >
-                  <div className="preco-avista">
-                    <span className="preco-label"></span>
-                    <strong className="preco-valor">
-                      {formatarPreco(v.precoVenda)}
-                    </strong>
-                  </div>
-                  <span className="peso-info">
-                    {v.pesoValor}
-                    {v.pesoUnidade} - {v.unidade}
-                  </span>
-                  <div className="acao-variacao">
-                    <BotaoAdicionar produto={produto} variacao={v} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </article>
-        );
-      })}
+      {produtos.map((produto) => (
+        <CardProduto
+          key={produto.id}
+          produto={produto}
+          exibirSeloPromocao={exibirSeloPromocao}
+        />
+      ))}
     </div>
   );
 }
