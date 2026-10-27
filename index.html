@@ -7,14 +7,37 @@
     <link rel="icon" href="/logo_Saint_200.ico" type="image/x-icon" />
     <!-- título, descrição e dados para o Google: gerados por página em scripts/prerender.mjs -->
     <title>Bourached Alimentos | Atacado de produtos naturais, grãos e temperos no Brás</title>
+    <script>
+      // Com JavaScript (navegador comum), o texto para o Google fica escondido
+      // e só a barra do cabeçalho aparece até a loja carregar.
+      document.documentElement.classList.add("js");
+    </script>
     <style>
-      /* conteúdo em texto gerado no build; o React troca pela loja ao carregar */
+      /* Conteúdo em texto gerado no build (scripts/prerender.mjs) para o Google.
+         Sem JavaScript ele aparece; com JavaScript o React troca pela loja. */
       .pre-render { font-family: system-ui, sans-serif; color: #0f1f2c; max-width: 1100px; margin: 0 auto; padding: 1rem; }
       .pre-render header { background: #001cb9; margin: -1rem -1rem 1rem; padding: 0.75rem 1rem; }
       .pre-render header a { color: #fff; font-weight: 700; }
       .pre-render header img { height: 56px; width: auto; }
       .pre-render h2 { font-size: 1rem; margin: 0.8rem 0 0.2rem; }
       .pre-render p { margin: 0.2rem 0; }
+
+      /* enquanto a loja carrega: fundo da loja + barra do cabeçalho nas cores
+         e altura reais (83 + 44 px no computador, 118 + 44 px no celular) */
+      html.js body { margin: 0; background: #f4f6fb; }
+      html.js .pre-render { display: none; }
+      html.js #root:has(> .pre-render)::before {
+        content: "";
+        display: block;
+        height: 127px;
+        background: linear-gradient(#001cb9 0 83px, #00127a 83px 127px);
+      }
+      @media (max-width: 768px) {
+        html.js #root:has(> .pre-render)::before {
+          height: 162px;
+          background: linear-gradient(#001cb9 0 118px, #00127a 118px 162px);
+        }
+      }
     </style>
   </head>
   <body>
