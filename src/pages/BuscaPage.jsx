@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import ListagemLoja from "../components/ListagemLoja.jsx";
 import { useDados } from "../hooks/useDados.js";
+import { usePagina } from "../hooks/usePagina.js";
 import { ehChavePromocao, extrairPromocoes, normalizarTexto } from "../utils/catalogo.js";
 
 function montarCodigos(produto) {
@@ -16,6 +17,8 @@ function BuscaPage() {
   const [searchParams] = useSearchParams();
   const termo = searchParams.get("q") || "";
   const { dados, carregando, erro } = useDados();
+  // resultados de busca interna não devem aparecer no Google
+  usePagina({ titulo: "Buscar produtos | Bourached Alimentos", caminho: "/busca", indexar: false });
 
   // Todos os produtos uma vez só. O item de promoção some quando o mesmo
   // produto já existe na categoria própria (evita cards duplicados).

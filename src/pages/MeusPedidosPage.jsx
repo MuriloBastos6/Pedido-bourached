@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCarrinho } from "../context/CarrinhoContext.jsx";
+import { usePagina } from "../hooks/usePagina.js";
 import { pedidosStorage } from "../storage/pedidosStorage.js";
 import { acharNoCatalogo, carregarCatalogo } from "../utils/catalogo.js";
 import {
@@ -22,6 +23,7 @@ function formatarData(iso) {
 }
 
 function MeusPedidosPage() {
+  usePagina({ titulo: "Meus pedidos | Bourached Alimentos", caminho: "/meus-pedidos", indexar: false });
   const { adicionar, abrirCarrinho } = useCarrinho();
   const [pedidos, setPedidos] = useState(() => pedidosStorage.listar());
   const [aviso, setAviso] = useState("");

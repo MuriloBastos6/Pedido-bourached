@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import CarrosselProdutos from "../components/CarrosselProdutos.jsx";
 import { categorias } from "../utils/categorias.js";
 import { useDados } from "../hooks/useDados.js";
+import { usePagina } from "../hooks/usePagina.js";
 import { extrairPromocoes, produtosDaCategoria } from "../utils/catalogo.js";
 import "./home.css";
 
@@ -39,6 +40,7 @@ const beneficios = [
 ];
 
 function HomePage() {
+  usePagina();
   const { dados, carregando, erro } = useDados();
 
   const promocoes = useMemo(() => (dados ? extrairPromocoes(dados) : []), [dados]);
@@ -67,7 +69,7 @@ function HomePage() {
         </div>
         <div className="hero-inner">
           <div className="hero-texto">
-            <span className="hero-etiqueta">Atacado de alimentos</span>
+            <span className="hero-etiqueta">Atacado de alimentos no Brás · SP</span>
             <h1>
               Faça seu pedido <em>em poucos cliques</em>
             </h1>

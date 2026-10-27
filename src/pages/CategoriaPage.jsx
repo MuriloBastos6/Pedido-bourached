@@ -4,12 +4,19 @@ import ListagemLoja from "../components/ListagemLoja.jsx";
 import SetasCategorias from "../components/SetasCategorias.jsx";
 import { buscarCategoria, promocoes } from "../utils/categorias.js";
 import { useDados } from "../hooks/useDados.js";
+import { usePagina } from "../hooks/usePagina.js";
+import { DESCRICOES, tituloCategoria } from "../seo.js";
 import { extrairPromocoes, produtosDaCategoria } from "../utils/catalogo.js";
 
 function CategoriaPage() {
   const { slug } = useParams();
   const categoria = buscarCategoria(slug);
   const { dados, carregando, erro } = useDados();
+  usePagina({
+    titulo: categoria ? tituloCategoria(categoria.titulo) : undefined,
+    descricao: DESCRICOES[slug],
+    caminho: `/${slug}`,
+  });
 
   const produtos = useMemo(() => {
     if (!dados || !categoria) return [];
@@ -26,6 +33,7 @@ function CategoriaPage() {
     <ListagemLoja
       key={slug}
       titulo={categoria.titulo}
+      descricao={DESCRICOES[slug]}
       produtos={produtos}
       carregando={carregando}
       erro={erro}

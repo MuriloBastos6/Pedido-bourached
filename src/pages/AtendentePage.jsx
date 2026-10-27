@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { carregarCatalogo } from "../utils/catalogo.js";
+import { usePagina } from "../hooks/usePagina.js";
 import { formatarPreco } from "../utils/pedido.js";
 import {
   ehMensagemDoSite,
@@ -85,17 +86,12 @@ function AtendentePage() {
   const [aviso, setAviso] = useState("");
   const [aprendido, setAprendido] = useState(() => lerAprendido());
 
+  // página interna: não aparece em buscadores
+  usePagina({ titulo: "Lançador de pedidos | Bourached", caminho: "/atendente", indexar: false });
+
   useEffect(() => {
     document.body.classList.add("produtos-page-body");
-    // página interna: não aparece em buscadores
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex, nofollow";
-    document.head.appendChild(meta);
-    return () => {
-      document.body.classList.remove("produtos-page-body");
-      document.head.removeChild(meta);
-    };
+    return () => document.body.classList.remove("produtos-page-body");
   }, []);
 
   useEffect(() => {

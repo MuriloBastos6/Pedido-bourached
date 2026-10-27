@@ -6,7 +6,7 @@ import { ordenacoes, ordenarProdutos } from "../utils/catalogo.js";
 
 // Layout das páginas de listagem (categoria, promoções, busca):
 // menu lateral + trilha + título + ordenação + grade de produtos.
-function ListagemLoja({ titulo, produtos = [], carregando, erro, vazio, rodape }) {
+function ListagemLoja({ titulo, descricao, produtos = [], carregando, erro, vazio, rodape }) {
   const [ordem, setOrdem] = useState("padrao");
   const ordenados = useMemo(() => ordenarProdutos(produtos, ordem), [produtos, ordem]);
 
@@ -41,6 +41,8 @@ function ListagemLoja({ titulo, produtos = [], carregando, erro, vazio, rodape }
             </label>
           )}
         </header>
+
+        {descricao && <p className="loja-descricao">{descricao}</p>}
 
         {carregando && <p className="aviso-carregando">Carregando produtos...</p>}
         {!carregando && erro && <p className="aviso-carregando">{erro}</p>}

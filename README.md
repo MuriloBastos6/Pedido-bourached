@@ -41,5 +41,12 @@ npm run dev
 - Categoria nova no bourached-dados: adicione-a em `src/utils/categorias.js` (título, capa em `public/` e slug igual à chave do JSON).
 - Armazenamento (hoje no aparelho do cliente): `src/storage/pedidosStorage.js`. Para login e histórico em qualquer aparelho, troque o miolo desse arquivo por um banco (ex.: Firebase).
 
+## Google (SEO)
+- `npm run build` gera, depois do Vite, um HTML por página (início, promoções e cada categoria) com título, descrição, endereço canônico, dados da loja (schema.org) e a lista de produtos em texto — o Google lê sem precisar executar o React (`scripts/prerender.mjs`). Também gera `robots.txt` e `sitemap.xml`.
+- Textos de cada categoria e dados da loja (endereço, horário, telefone): `src/seo.js`.
+- Domínio público: `VITE_SITE_URL` no `.env` (e na Vercel). Ao trocar de domínio, rode o build de novo.
+- Busca interna, Meus pedidos e `/atendente` ficam fora do Google (`noindex`).
+- Categoria nova: além de `src/utils/categorias.js`, coloque a frase dela em `DESCRICOES` (`src/seo.js`).
+
 ## Publicar
 Crie um repositório novo no GitHub e importe na Vercel (framework Vite). O `vercel.json` já cuida das rotas.
