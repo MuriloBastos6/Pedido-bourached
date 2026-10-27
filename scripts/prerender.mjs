@@ -96,7 +96,7 @@ function paginaInicial(dados) {
     caminho: "/",
     conteudo: `<header><img src="/logo-bourached-branco.png" alt="Bourached Alimentos" width="160" height="160" /></header>
 <main>
-<h1>Bourached Alimentos: atacado de produtos naturais, grãos e temperos no Brás</h1>
+<h1>Bourached Alimentos: distribuidora de produtos naturais, grãos e temperos no Brás</h1>
 <p>${esc(HOME.descricao)}</p>
 <p>Rua do Lucas, 306 - Brás, São Paulo - SP · Segunda a sexta, das 06:00 às 16:30 · WhatsApp (11) 96418-1200</p>
 <ul>${lista}</ul>

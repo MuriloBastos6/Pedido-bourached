@@ -69,7 +69,7 @@ function HomePage() {
         </div>
         <div className="hero-inner">
           <div className="hero-texto">
-            <span className="hero-etiqueta">Atacado de alimentos no Brás · SP</span>
+            <span className="hero-etiqueta">Distribuidora de alimentos no Brás · SP</span>
             <h1>
               Faça seu pedido <em>em poucos cliques</em>
             </h1>
