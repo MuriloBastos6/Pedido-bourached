@@ -25,3 +25,8 @@ dist-ssr
 
 # Instaladores/executáveis que não pertencem ao repo
 *.exe
+
+# Variáveis de ambiente (ficam fora do git)
+.env
+.env.*
+!.env.example
