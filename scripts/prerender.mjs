@@ -21,7 +21,8 @@ if (existsSync(arquivoEnv)) {
 }
 
 const { categorias, promocoes } = await import("../src/utils/categorias.js");
-const { SITE_URL, HOME, DESCRICOES, NEGOCIO, tituloCategoria, urlCompleta } = await import("../src/seo.js");
+const { SITE_URL, HOME, DESCRICOES, TEXTOS, PERGUNTAS, NEGOCIO, tituloCategoria, urlCompleta } =
+  await import("../src/seo.js");
 const { PRODUTOS_URL, extrairPromocoes, produtosDaCategoria } = await import("../src/utils/catalogo.js");
 
 const DIST = resolve("dist");
@@ -122,9 +123,22 @@ function paginaCategoria(cat, dados) {
         { "@type": "ListItem", position: 2, name: cat.titulo, item: urlCompleta(`/${cat.slug}`) },
       ],
     },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: PERGUNTAS.map(({ pergunta, resposta }) => ({
+        "@type": "Question",
+        name: pergunta,
+        acceptedAnswer: { "@type": "Answer", text: resposta },
+      })),
+    },
   ];
+  const sobre = (TEXTOS[cat.slug] || []).map((t) => `<p>${esc(t)}</p>`).join("");
+  const perguntas = PERGUNTAS.map(
+    ({ pergunta, resposta }) => `<h3>${esc(pergunta)}</h3><p>${esc(resposta)}</p>`,
+  ).join("");
   return montarHtml({
-    titulo: tituloCategoria(cat.titulo),
+    titulo: tituloCategoria(cat.titulo, cat.slug),
     descricao: DESCRICOES[cat.slug] || HOME.descricao,
     caminho: `/${cat.slug}`,
     jsonLdExtra,
@@ -133,6 +147,8 @@ function paginaCategoria(cat, dados) {
 <h1>${esc(cat.titulo)}</h1>
 <p>${esc(DESCRICOES[cat.slug] || "")}</p>
 ${produtos.length ? `<p>${produtos.length} produtos</p><ul>${itens}</ul>` : ""}
+${sobre ? `<h2>Sobre ${esc(cat.titulo.toLowerCase())} na Bourached</h2>${sobre}` : ""}
+<h2>Perguntas frequentes</h2>${perguntas}
 ${navCategorias()}
 </main>`,
   });

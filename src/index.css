@@ -928,3 +928,40 @@ main:has(.meus-pedidos, .atendente) + .site-footer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Texto da categoria e perguntas frequentes (embaixo dos produtos) */
+.sobre-categoria {
+  max-width: 62rem;
+  margin: 2.2rem 0 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.sobre-categoria h2 {
+  margin: 1.4rem 0 0.5rem;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.sobre-categoria p {
+  margin: 0 0 0.7rem;
+}
+
+.perguntas details {
+  background: var(--bg-surface);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.perguntas summary {
+  cursor: pointer;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.perguntas details p {
+  margin: 0.5rem 0 0;
+}
