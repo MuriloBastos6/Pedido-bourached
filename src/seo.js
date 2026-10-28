@@ -5,7 +5,7 @@
 export const SITE_URL = (
   globalThis.process?.env?.VITE_SITE_URL ||
   import.meta.env?.VITE_SITE_URL ||
-  "https://produtos-bourached.vercel.app"
+  "https://www.bourached.com.br"
 ).replace(/\/+$/, "");
 
 export const NOME_SITE = "Bourached Alimentos";
