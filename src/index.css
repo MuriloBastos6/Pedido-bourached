@@ -965,3 +965,78 @@ main:has(.meus-pedidos, .atendente) + .site-footer {
 .perguntas details p {
   margin: 0.5rem 0 0;
 }
+
+.nome-produto a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nome-produto a:hover {
+  color: var(--azul);
+  text-decoration: underline;
+}
+
+/* Página de um produto: card de compra + informações */
+.produto-pagina {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: 1.8rem;
+  align-items: start;
+  margin-top: 0.4rem;
+}
+
+.produto-pagina-info {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.produto-pagina-titulo {
+  margin: 0 0 1rem;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.produto-pagina-info h2 {
+  margin: 1.2rem 0 0.4rem;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.produto-pagina-info ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.produto-pagina-info p {
+  margin: 0 0 0.6rem;
+}
+
+.produto-pagina-whats {
+  display: inline-block;
+  margin: 1.2rem 0 0.8rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  background: var(--verde-whats);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.produto-pagina-whats:hover {
+  filter: brightness(0.95);
+}
+
+@media (max-width: 768px) {
+  .produto-pagina {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .produto-pagina-card {
+    max-width: 320px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}

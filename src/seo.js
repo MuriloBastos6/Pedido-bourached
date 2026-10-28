@@ -167,6 +167,43 @@ export const TEXTOS = {
   ],
 };
 
+// Páginas de produto (/produto/...): título, descrição e usos por categoria.
+// Categorias de produtos embalados não levam "a Granel" no título.
+const SEM_GRANEL = new Set(["refris", "oleo", "goma", "potes"]);
+
+export function tituloProduto(nome, categoria) {
+  return SEM_GRANEL.has(categoria) ? `${nome} | ${LOCAL}` : `${nome} a Granel | ${LOCAL}`;
+}
+
+// embalagens: lista por extenso ("saco de 25 kg", ...)
+export function descricaoProduto(nome, embalagens = []) {
+  const lista = embalagens.length > 1
+    ? `${embalagens.slice(0, -1).join(", ")} e ${embalagens.at(-1)}`
+    : embalagens[0];
+  return `${nome}${lista ? ` em ${lista}` : ""}. Distribuidora no Brás, São Paulo: monte o pedido no site, envie pelo WhatsApp e retire na loja.`;
+}
+
+export const USOS = {
+  amendoim: "Para revenda a granel em empórios e lojas de produtos naturais, petiscos de bares e uso em confeitaria, granolas, doces e receitas.",
+  arroz: "Para restaurantes, marmitarias e cozinhas industriais, e para revenda por peso em empórios e lojas a granel.",
+  sucrilhos: "Para revenda a granel, cafés da manhã de hotéis e cafeterias, coberturas de açaí e sobremesas, e misturas com granola e frutas secas.",
+  cha: "Para revenda a granel em lojas de produtos naturais e empórios, casas de chá, cafeterias e preparo de blends próprios.",
+  farinhas: "Para padarias, confeitarias e restaurantes, receitas sem glúten e low carb, farofas e revenda por peso em lojas a granel.",
+  graos: "Para restaurantes, marmitarias e cozinhas industriais, e para revenda por peso em empórios e lojas a granel.",
+  panificacao: "Para padarias, confeitarias, fábricas de pão de queijo e biscoito, lanchonetes e revenda fracionada em empórios.",
+  especiarias: "Para restaurantes, açougues e fábricas de alimentos, e para revenda fracionada em potes e saquinhos em empórios e lojas a granel.",
+  frutas: "Para revenda a granel em empórios, panetones, bolos e granolas em padarias e confeitarias, e cestas de fim de ano.",
+  sementes: "Para revenda a granel em lojas de produtos naturais, pães e biscoitos integrais em padarias e, no caso do alpiste e do painço, casas de ração.",
+  produtosnaturais: "Para revenda a granel em lojas de produtos naturais e empórios, academias, cafeterias, padarias e confeitarias.",
+  refris: "Para revenda em mercados, bares, lanchonetes, casas do Norte e Nordeste e restaurantes de comida nordestina.",
+  oleo: "Para restaurantes de comida baiana e nordestina, acarajé, moquecas, doces e revenda em mercados e casas do Norte.",
+  goma: "Para tapiocarias, lanchonetes, padarias, cafeterias e revenda em mercados e empórios.",
+  salgadinhos: "Para revenda a granel em empórios, porções em bares e restaurantes e prateleira de mercados, padarias e lanchonetes.",
+  doces: "Para revenda a granel em empórios e lojas de doces, bomboniéres, buffets, kits de festa e lembrancinhas.",
+  bolachas: "Para revenda a granel em empórios, padarias e cafeterias, e cafés da manhã de hotéis, escritórios e eventos.",
+  potes: "Para expor grãos, castanhas, temperos, balas e bolachas no balcão e nas prateleiras de lojas a granel e empórios.",
+};
+
 // Perguntas frequentes: as mesmas em todas as categorias.
 export const PERGUNTAS = [
   {

@@ -1,6 +1,6 @@
 // Roda depois do "vite build" (npm run build).
 // O site é React: sem isto, o HTML que o Google recebe é só <div id="root">.
-// Aqui geramos um HTML por página (início e cada categoria) com título,
+// Aqui geramos um HTML por página (início, cada categoria e cada produto) com título,
 // descrição, endereço canônico, dados da loja (schema.org) e o conteúdo em
 // texto (categorias, produtos e embalagens). Ao abrir no navegador, o React
 // substitui esse conteúdo pela loja normal.
@@ -8,7 +8,7 @@
 //
 // Os preços NÃO entram no HTML: mudam com frequência e ficariam velhos até o
 // próximo deploy. O Google lê os preços atuais quando executa o site.
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 // Variáveis VITE_ do .env (a Vercel também as passa pelo ambiente)
@@ -20,11 +20,16 @@ if (existsSync(arquivoEnv)) {
   }
 }
 
-const { categorias, promocoes } = await import("../src/utils/categorias.js");
-const { SITE_URL, HOME, DESCRICOES, TEXTOS, PERGUNTAS, NEGOCIO, tituloCategoria, urlCompleta } =
-  await import("../src/seo.js");
-const { PRODUTOS_URL, extrairPromocoes, produtosDaCategoria, urlImagemProduto } =
-  await import("../src/utils/catalogo.js");
+const { categorias, promocoes, buscarCategoria } = await import("../src/utils/categorias.js");
+const {
+  SITE_URL, HOME, DESCRICOES, TEXTOS, PERGUNTAS, USOS, NEGOCIO,
+  tituloCategoria, tituloProduto, descricaoProduto, urlCompleta,
+} = await import("../src/seo.js");
+const {
+  PRODUTOS_URL, extrairPromocoes, produtosDaCategoria, urlImagemProduto,
+  indiceProdutos, caminhoProduto, nomeProduto, descreverEmbalagem,
+} = await import("../src/utils/catalogo.js");
+const { linkWhatsApp } = await import("../src/utils/pedido.js");
 
 const DIST = resolve("dist");
 const base = readFileSync(resolve(DIST, "index.html"), "utf8");
@@ -75,13 +80,14 @@ function listaDeProdutos(cat, produtos) {
       "@type": "ListItem",
       position: i + 1,
       name: p.descricao,
+      url: caminhoProduto(dados, p) ? urlCompleta(caminhoProduto(dados, p)) : undefined,
       description: `Embalagens: ${embalagens(p)}`,
       image: imagemCompleta(p),
     })),
   };
 }
 
-function montarHtml({ titulo, descricao, caminho, conteudo, jsonLdExtra = [] }) {
+function montarHtml({ titulo, descricao, caminho, conteudo, jsonLdExtra = [], imagem = `${SITE_URL}/amendoim.jpeg` }) {
   const url = urlCompleta(caminho);
   const jsonLd = [NEGOCIO, ...jsonLdExtra]
     .map((d) => `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`)
@@ -96,7 +102,7 @@ function montarHtml({ titulo, descricao, caminho, conteudo, jsonLdExtra = [] }) 
     <meta property="og:title" content="${esc(titulo)}" />
     <meta property="og:description" content="${esc(descricao)}" />
     <meta property="og:url" content="${esc(url)}" />
-    <meta property="og:image" content="${esc(`${SITE_URL}/amendoim.jpeg`)}" />
+    <meta property="og:image" content="${esc(imagem)}" />
     ${jsonLd}`;
 
   const html = base
@@ -140,7 +146,11 @@ function paginaCategoria(cat, dados) {
       ? extrairPromocoes(dados)
       : produtosDaCategoria(dados, cat.slug);
   const itens = produtos
-    .map((p) => `<li><h2>${esc(p.descricao)}</h2><p>Embalagens: ${esc(embalagens(p))}</p></li>`)
+    .map((p) => {
+      const href = caminhoProduto(dados, p);
+      const nome = href ? `<a href="${esc(href)}">${esc(p.descricao)}</a>` : esc(p.descricao);
+      return `<li><h2>${nome}</h2><p>Embalagens: ${esc(embalagens(p))}</p></li>`;
+    })
     .join("");
   const jsonLdExtra = [
     {
@@ -183,8 +193,53 @@ ${navCategorias()}
   });
 }
 
+function paginaProduto(slug, { produto, categoria }) {
+  const cat = buscarCategoria(categoria) || { titulo: categoria, slug: categoria };
+  const nome = nomeProduto(produto.descricao);
+  const variacoes = produto.variacoes || [];
+  const textos = variacoes.map(descreverEmbalagem);
+  const descricao = descricaoProduto(nome, textos);
+  const caminho = `/produto/${slug}`;
+  const imagem = urlImagemProduto(produto.imagem);
+  const mensagem = `Olá! Vim pelo site e quero pedir: ${produto.descricao} (Cód. ${variacoes.map((v) => v.codigo).join(" / ")})`;
+  const lista = variacoes
+    .map((v, i) => `<li>${esc(textos[i].charAt(0).toUpperCase() + textos[i].slice(1))} · Cód. ${esc(v.codigo)}</li>`)
+    .join("");
+  // O schema Product (com preços) é colocado pelo React, no navegador.
+  const jsonLdExtra = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Início", item: urlCompleta("/") },
+        { "@type": "ListItem", position: 2, name: cat.titulo, item: urlCompleta(`/${cat.slug}`) },
+        { "@type": "ListItem", position: 3, name: nome, item: urlCompleta(caminho) },
+      ],
+    },
+  ];
+  return montarHtml({
+    titulo: tituloProduto(nome, categoria),
+    descricao,
+    caminho,
+    jsonLdExtra,
+    ...(imagem ? { imagem: /^https?:/.test(imagem) ? imagem : urlCompleta(imagem) } : {}),
+    conteudo: `<header><a href="/">Bourached Alimentos</a></header>
+<main>
+<nav aria-label="Você está em"><a href="/">Início</a> / <a href="/${esc(cat.slug)}">${esc(cat.titulo)}</a> / ${esc(nome)}</nav>
+<h1>${esc(nome)}</h1>
+<p>${esc(descricao)}</p>
+<h2>Embalagens</h2>
+<ul>${lista}</ul>
+${USOS[categoria] ? `<h2>Usos</h2><p>${esc(USOS[categoria])}</p>` : ""}
+<p><a href="${esc(linkWhatsApp(mensagem))}">Pedir pelo WhatsApp</a></p>
+<p><a href="/${esc(cat.slug)}">Ver todos os produtos de ${esc(cat.titulo.toLowerCase())}</a></p>
+</main>`,
+  });
+}
+
 const dados = await baixarProdutos();
 const paginas = [promocoes, ...categorias];
+const produtos = dados ? [...indiceProdutos(dados).porSlug] : [];
 
 writeFileSync(resolve(DIST, "index.html"), paginaInicial(dados));
 for (const cat of paginas) {
@@ -193,7 +248,13 @@ for (const cat of paginas) {
 }
 
 const hoje = new Date().toISOString().slice(0, 10);
-const urls = ["/", ...paginas.map((c) => `/${c.slug}`)];
+// cleanUrls serve /produto/alho-frito a partir de produto/alho-frito.html
+mkdirSync(resolve(DIST, "produto"), { recursive: true });
+for (const [slug, item] of produtos) {
+  writeFileSync(resolve(DIST, "produto", `${slug}.html`), paginaProduto(slug, item));
+}
+
+const urls = ["/", ...paginas.map((c) => `/${c.slug}`), ...produtos.map(([slug]) => `/produto/${slug}`)];
 writeFileSync(
   resolve(DIST, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>

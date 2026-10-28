@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import BotaoAdicionar from "./BotaoAdicionar.jsx";
 import { useCarrinho } from "../context/CarrinhoContext.jsx";
 import { chaveItem, formatarPreco } from "../utils/pedido.js";
-import { urlImagemProduto } from "../utils/catalogo.js";
+import { caminhoProduto, urlImagemProduto } from "../utils/catalogo.js";
+import { useDados } from "../hooks/useDados.js";
 
 function removerExtensao(arquivo = "") {
   const semQuery = String(arquivo).split("?")[0].split("#")[0];
@@ -75,7 +77,8 @@ function ImagemProduto({ produto }) {
   );
 }
 
-export function CardProduto({ produto, exibirSeloPromocao = true }) {
+// href: endereço da página do produto (o nome vira link para ela)
+export function CardProduto({ produto, exibirSeloPromocao = true, href }) {
   const { itens } = useCarrinho();
   const variacoes = [...(produto.variacoes || [])].sort(
     (a, b) => Number(b.pesoValor || 0) - Number(a.pesoValor || 0),
@@ -100,7 +103,7 @@ export function CardProduto({ produto, exibirSeloPromocao = true }) {
 
       <div className="card-produto-corpo">
         <h3 className="nome-produto" title={produto.descricao}>
-          {produto.descricao}
+          {href ? <Link to={href}>{produto.descricao}</Link> : produto.descricao}
         </h3>
         <p className="codigo-produto">Cód. {selecionada.codigo}</p>
 
@@ -143,6 +146,7 @@ export function CardProduto({ produto, exibirSeloPromocao = true }) {
 }
 
 function ProdutosGrid({ produtos = [], exibirSeloPromocao = true }) {
+  const { dados } = useDados();
   return (
     <div className="categoria-grid">
       {produtos.map((produto) => (
@@ -150,6 +154,7 @@ function ProdutosGrid({ produtos = [], exibirSeloPromocao = true }) {
           key={produto.chaveLista || produto.id}
           produto={produto}
           exibirSeloPromocao={exibirSeloPromocao}
+          href={caminhoProduto(dados, produto)}
         />
       ))}
     </div>

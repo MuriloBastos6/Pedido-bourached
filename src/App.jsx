@@ -7,6 +7,7 @@ import CategoriaPage from "./pages/CategoriaPage.jsx";
 import BuscaPage from "./pages/BuscaPage.jsx";
 import MeusPedidosPage from "./pages/MeusPedidosPage.jsx";
 import AtendentePage from "./pages/AtendentePage.jsx";
+import ProdutoPage from "./pages/ProdutoPage.jsx";
 import { CarrinhoProvider } from "./context/CarrinhoContext.jsx";
 import BotaoCarrinho from "./components/BotaoCarrinho.jsx";
 import CarrinhoDrawer from "./components/CarrinhoDrawer.jsx";
@@ -26,6 +27,7 @@ function App() {
             <Route path="/busca" element={<BuscaPage />} />
             <Route path="/meus-pedidos" element={<MeusPedidosPage />} />
             <Route path="/atendente" element={<AtendentePage />} />
+            <Route path="/produto/:slug" element={<ProdutoPage />} />
             <Route path="/:slug" element={<CategoriaPage />} />
           </Routes>
         </main>
