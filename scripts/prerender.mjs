@@ -23,7 +23,8 @@ if (existsSync(arquivoEnv)) {
 const { categorias, promocoes } = await import("../src/utils/categorias.js");
 const { SITE_URL, HOME, DESCRICOES, TEXTOS, PERGUNTAS, NEGOCIO, tituloCategoria, urlCompleta } =
   await import("../src/seo.js");
-const { PRODUTOS_URL, extrairPromocoes, produtosDaCategoria } = await import("../src/utils/catalogo.js");
+const { PRODUTOS_URL, extrairPromocoes, produtosDaCategoria, urlImagemProduto } =
+  await import("../src/utils/catalogo.js");
 
 const DIST = resolve("dist");
 const base = readFileSync(resolve(DIST, "index.html"), "utf8");
@@ -51,6 +52,33 @@ async function baixarProdutos() {
     console.warn(`prerender: não consegui baixar ${PRODUTOS_URL} (${erro.message})`);
     return null;
   }
+}
+
+// Imagem do produto em endereço completo (a imagem padrão fica no próprio site).
+function imagemCompleta(produto) {
+  const caminho = urlImagemProduto(produto.imagem);
+  if (!caminho) return undefined;
+  return /^https?:/.test(caminho) ? caminho : urlCompleta(caminho);
+}
+
+// Lista dos produtos da página para o Google (schema.org ItemList). Sem preço,
+// pelo mesmo motivo do HTML; por isso cada item é um ListItem, não um Product
+// (o Google pede preço, avaliação ou nota em todo Product).
+function listaDeProdutos(cat, produtos) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: cat.titulo,
+    url: urlCompleta(`/${cat.slug}`),
+    numberOfItems: produtos.length,
+    itemListElement: produtos.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.descricao,
+      description: `Embalagens: ${embalagens(p)}`,
+      image: imagemCompleta(p),
+    })),
+  };
 }
 
 function montarHtml({ titulo, descricao, caminho, conteudo, jsonLdExtra = [] }) {
@@ -123,6 +151,7 @@ function paginaCategoria(cat, dados) {
         { "@type": "ListItem", position: 2, name: cat.titulo, item: urlCompleta(`/${cat.slug}`) },
       ],
     },
+    ...(produtos.length ? [listaDeProdutos(cat, produtos)] : []),
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
